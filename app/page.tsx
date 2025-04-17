@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Script from "next/script"
 
 export default function Home() {
   return (
@@ -51,6 +52,8 @@ export default function Home() {
           </a>
         </div>
       </main>
+      <Script src="https://unpkg.com/papaparse@latest/papaparse.min.js"/>
+      <Script type="module" src="utils/parse.js" strategy="lazyOnload"/>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
