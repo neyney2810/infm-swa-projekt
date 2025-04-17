@@ -1,3 +1,5 @@
+"use client";
+
 import Map from "ol/Map";
 import Feature from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
@@ -23,9 +25,6 @@ type Location = {
 };
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  title: string;
-  titleProps?: HTMLAttributes<HTMLDivElement>;
-  subtitle?: string;
   mapColor?: ColorLike;
   trendlineColor?: ColorLike;
   markerColor?: ColorLike;
@@ -61,7 +60,7 @@ const markerStyle = (color: string) => {
   }
 };
 
-export const CustomMapSection: FC<Props> = ({ title, titleProps, subtitle, mapColor, trendlineColor, markerColor, ...props }) => {
+export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerColor, ...props }) => {
   let hit = null;
   let element = "";
   // const [mapLabel, setMapLabel] = useState<String | number | undefined>('')
@@ -251,7 +250,7 @@ export const CustomMapSection: FC<Props> = ({ title, titleProps, subtitle, mapCo
         <div className="mx-auto max-w-2xl sm:px-4 lg:max-w-none">
           <div className="mx-auto max-w-2xl gap-y-12 sm:px-4 lg:max-w-none">
             <div className="flex flex-wrap">
-              <div className="h-auto w-full md:w-2/3 flex justify-start">
+              <div className="h-auto w-full flex justify-start">
                 <div id="map" className="map w-full max-w-xl aspect-[23/24]"></div>
               </div>
             </div>
