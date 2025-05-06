@@ -245,18 +245,8 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
   }
 
   return (
-    <div className={clsx("bg-white", props.className)}>
-      <div className="mx-auto max-w-7xl py-12 sm:px-2 sm:py-16 lg:px-4">
-        <div className="mx-auto max-w-2xl sm:px-4 lg:max-w-none">
-          <div className="mx-auto max-w-2xl gap-y-12 sm:px-4 lg:max-w-none">
-            <div className="flex flex-wrap">
-              <div className="h-auto w-full flex justify-start">
-                <div id="map" className="map w-full max-w-xl aspect-[23/24]"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className={clsx("bg-white w-full h-full", props.className)}>
+      <div id="map" className="map w-full aspect-[23/26]"></div>
     </div>
   );
 };
