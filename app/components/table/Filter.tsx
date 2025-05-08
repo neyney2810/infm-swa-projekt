@@ -1,44 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTableContext } from "./Context";
 import { Bundesland } from "@/app/types";
 
 const Filter: React.FC = () => {
   const { filter, setFilter } = useTableContext();
-  const [year, setYear] = useState<number | null>(filter.year);
   const [bundesland, setBundesland] = useState<string | null>(filter.bundesland);
+  const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(null);
+  const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<string[]>([]);
 
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value ? parseInt(e.target.value, 10) : null;
-    setYear(value);
-  };
+  useEffect(() => {
+    const fetchWirtschaftszweigOptions = async () => {
+      try {
+        const response = await fetch("/api/meta");
+        if (!response.ok) {
+          throw new Error("Failed to fetch Wirtschaftszweig options");
+        }
+        const data = await response.json();
+        setWirtschaftszweigOptions(data.wirtschaftszweig || []);
+      } catch (error) {
+        console.error("Error fetching Wirtschaftszweig options:", error);
+      }
+    };
+
+    fetchWirtschaftszweigOptions();
+  }, []);
 
   const handleBundeslandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setBundesland(e.target.value || null);
   };
 
-  const applyFilters = () => {
-    setFilter({ year, bundesland });
+  const handleWirtschaftszweigChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setWirtschaftszweig(e.target.value || null);
   };
 
   return (
     <div className="grid grid-cols-2 gap-4 p-4 border border-gray-300 rounded-md">
-      <div className="flex flex-col gap-2">
-        <label htmlFor="year" className="font-medium">
-          Year
-        </label>
-        <input id="year" type="number" value={year || ""} onChange={handleYearChange} placeholder="Enter year" className="border border-gray-300 rounded-md px-2 py-1" />
-      </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center gap-2">
         <label htmlFor="bundesland" className="font-medium">
-          Bundesland
+          Bundesland:
         </label>
         <select id="bundesland" value={bundesland || ""} onChange={handleBundeslandChange} className="border border-gray-300 rounded-md px-2 py-1">
           <option value="">Select Bundesland</option>
           {Object.entries(Bundesland).map(([key, value]) => (
             <option key={key} value={value}>
               {value}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex flex-row items-center gap-2 col-span-2">
+        <label htmlFor="wirtschaftszweig" className="font-medium">
+          Wirtschaftszweig:
+        </label>
+        <select id="wirtschaftszweig" value={wirtschaftszweig || ""} onChange={handleWirtschaftszweigChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
+          <option value="">Select Wirtschaftszweig</option>
+          {wirtschaftszweigOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
             </option>
           ))}
         </select>

@@ -115,7 +115,7 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
     const vectorLayer = new VectorLayer({
       source: new VectorSource({
         features: markers,
-        url: "/geo/dach.geojson",
+        url: "/geo/de_niedrig.geo.json",
         format: new GeoJSON()
       }),
       style: styleFunction
