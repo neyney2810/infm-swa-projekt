@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import Map from "ol/Map";
-import Feature from "ol/Feature";
-import GeoJSON from "ol/format/GeoJSON";
-import { Vector as VectorSource } from "ol/source";
-import Point from "ol/geom/Point";
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
-import { Layer, Vector as VectorLayer } from "ol/layer";
-import View from "ol/View";
-import { fromLonLat } from "ol/proj";
-import { type FC, useEffect, useState, type HTMLAttributes } from "react";
-import type MapBrowserEvent from "ol/MapBrowserEvent";
-import clsx from "clsx";
-import type { ColorLike } from "ol/colorlike";
-import { readData } from "@/app/utils/read-items";
+import Map from 'ol/Map';
+import Feature from 'ol/Feature';
+import GeoJSON from 'ol/format/GeoJSON';
+import { Vector as VectorSource } from 'ol/source';
+import Point from 'ol/geom/Point';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Layer, Vector as VectorLayer } from 'ol/layer';
+import View from 'ol/View';
+import { fromLonLat } from 'ol/proj';
+import { type FC, useEffect, useState, type HTMLAttributes } from 'react';
+import type MapBrowserEvent from 'ol/MapBrowserEvent';
+import clsx from 'clsx';
+import type { ColorLike } from 'ol/colorlike';
+import { readData } from '@/app/utils/read-items';
 
 type Location = {
   name: string;
@@ -31,45 +31,53 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 enum StyleType {
-  Polygon = "Polygon",
-  MultiPolygon = "Multipolygon",
-  geoMarker = "geoMarker",
-  Point = "Point",
-  MultiPoint = "MultiPoint",
-  LineString = "LineString",
-  LinearRing = "LinearRing",
-  MultiLineString = "MultiLineString",
-  GeometryCollection = "GeometryCollection"
+  Polygon = 'Polygon',
+  MultiPolygon = 'Multipolygon',
+  geoMarker = 'geoMarker',
+  Point = 'Point',
+  MultiPoint = 'MultiPoint',
+  LineString = 'LineString',
+  LinearRing = 'LinearRing',
+  MultiLineString = 'MultiLineString',
+  GeometryCollection = 'GeometryCollection',
 }
 
 const markerStyle = (color: string) => {
-  if (color == "red") {
+  if (color == 'red') {
     return new Style({
       image: new CircleStyle({
         radius: 10.5,
-        fill: new Fill({ color: "rgba(255, 0, 0, 1)" })
-      })
+        fill: new Fill({ color: 'rgba(255, 0, 0, 1)' }),
+      }),
     });
   } else {
     return new Style({
       image: new CircleStyle({
         radius: 6.5,
-        fill: new Fill({ color: "rgba(187, 205, 81, 1)" })
-      })
+        fill: new Fill({ color: 'rgba(187, 205, 81, 1)' }),
+      }),
     });
   }
 };
 
-export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerColor, ...props }) => {
+export const CustomMapSection: FC<Props> = ({
+  mapColor,
+  trendlineColor,
+  markerColor,
+  ...props
+}) => {
   let hit = null;
-  let element = "";
+  let element = '';
   // const [mapLabel, setMapLabel] = useState<String | number | undefined>('')
   // const [markerId, setMarkerId] = useState<number | undefined>()
 
   const [locations, setLocations] = useState<Location[]>([]);
   useEffect(() => {
-    readData("stoffklasse", {}).then((productData: any[]) => {
-      const locations = productData[0].locations.length > 0 ? productData[0].locations.map((elem: any) => elem.locations_id) : [];
+    readData('stoffklasse', {}).then((productData: any[]) => {
+      const locations =
+        productData[0].locations.length > 0
+          ? productData[0].locations.map((elem: any) => elem.locations_id)
+          : [];
       createMap(locations);
       setLocations(locations);
     });
@@ -81,27 +89,27 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
       // const hello: keyof typeof StyleType = feature!.getGeometry()!.getType()
       let style: Style = new Style({});
       switch (feature!.getGeometry()!.getType()) {
-        case "Polygon": {
+        case 'Polygon': {
           style = new Style({
             stroke: new Stroke({
-              color: trendlineColor || "white",
-              width: 1
+              color: trendlineColor || 'white',
+              width: 1,
             }),
             fill: new Fill({
-              color: mapColor || "rgba(223,239,250,255)"
-            })
+              color: mapColor || 'rgba(223,239,250,255)',
+            }),
           });
           break;
         }
-        case "MultiPolygon": {
+        case 'MultiPolygon': {
           style = new Style({
             stroke: new Stroke({
-              color: trendlineColor || "white",
-              width: 1
+              color: trendlineColor || 'white',
+              width: 1,
             }),
             fill: new Fill({
-              color: mapColor || "rgba(223,239,250,255)"
-            })
+              color: mapColor || 'rgba(223,239,250,255)',
+            }),
           });
           break;
         }
@@ -115,38 +123,40 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
     const vectorLayer = new VectorLayer({
       source: new VectorSource({
         features: markers,
-        url: "/geo/de_niedrig.geo.json",
-        format: new GeoJSON()
+        url: '/geo/de_niedrig.geo.json',
+        format: new GeoJSON(),
       }),
-      style: styleFunction
+      style: styleFunction,
     });
 
     const zoom = () => {
-      if (window.innerWidth <= 660) return (5.5 * Math.log(window.innerWidth)) / Math.log(500);
+      if (window.innerWidth <= 660)
+        return (5.5 * Math.log(window.innerWidth)) / Math.log(500);
       if (window.innerWidth <= 768) {
         return 5.74;
       }
-      if (window.innerWidth <= 1024) return (5.3 * Math.log(window.innerWidth)) / Math.log(768);
+      if (window.innerWidth <= 1024)
+        return (5.3 * Math.log(window.innerWidth)) / Math.log(768);
       return 5.7;
     };
 
     const map = new Map({
-      target: "map",
+      target: 'map',
       layers: [vectorLayer],
       view: new View({
         center: fromLonLat([10.682127, 50.510924]),
-        zoom: zoom()
+        zoom: zoom(),
       }),
       controls: [],
-      interactions: []
+      interactions: [],
     });
 
     window.onresize = () => {
-      console.log("resize1");
+      console.log('resize1');
       map.setView(
         new View({
           center: fromLonLat([10.682127, 50.510924]),
-          zoom: zoom()
+          zoom: zoom(),
         })
       );
     };
@@ -157,12 +167,12 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
         new Style({
           image: new CircleStyle({
             radius: 4.5,
-            fill: new Fill({ color: "red" }),
+            fill: new Fill({ color: 'red' }),
             stroke: new Stroke({
-              color: "red",
-              width: 2
-            })
-          })
+              color: 'red',
+              width: 2,
+            }),
+          }),
         })
       );
     };
@@ -170,21 +180,21 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
     let selected: Feature | null = null;
     let currentStyle: Style | CircleStyle = new Style({
       fill: new Fill({
-        color: "#eeeeee"
+        color: '#eeeeee',
       }),
       stroke: new Stroke({
-        color: "rgba(255, 255, 255, 0.7)",
-        width: 2
-      })
+        color: 'rgba(255, 255, 255, 0.7)',
+        width: 2,
+      }),
     });
     const selectStyle = new Style({
       fill: new Fill({
-        color: "#eeeeee"
+        color: '#eeeeee',
       }),
       stroke: new Stroke({
-        color: "rgba(255, 255, 255, 0.7)",
-        width: 2
-      })
+        color: 'rgba(255, 255, 255, 0.7)',
+        width: 2,
+      }),
     });
 
     // map.on("pointer", function (this: Map, evt: MapBrowserEvent<PointerEvent>) {
@@ -221,15 +231,17 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
     let markers: any[] = [];
     locations.forEach((element, index) => {
       let city = new Feature({
-        geometry: new Point(fromLonLat([Number(element.lon), Number(element.lat)]))
+        geometry: new Point(
+          fromLonLat([Number(element.lon), Number(element.lat)])
+        ),
       });
-      city.setId("marker-" + index);
+      city.setId('marker-' + index);
       city.setStyle(
         new Style({
           image: new CircleStyle({
             radius: 6.5,
-            fill: new Fill({ color: markerColor || "rgba(187, 205, 81, 1)" })
-          })
+            fill: new Fill({ color: markerColor || 'rgba(187, 205, 81, 1)' }),
+          }),
           // text: new Text({
           //   font: '12px Calibri,sans-serif',
           //   overflow: true,
@@ -245,7 +257,7 @@ export const CustomMapSection: FC<Props> = ({ mapColor, trendlineColor, markerCo
   }
 
   return (
-    <div className={clsx("bg-white w-full h-full", props.className)}>
+    <div className={clsx('bg-white w-full h-full', props.className)}>
       <div id="map" className="map w-full aspect-[23/26]"></div>
     </div>
   );
