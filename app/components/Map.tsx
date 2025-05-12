@@ -4,25 +4,21 @@ import Map from 'ol/Map';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Vector as VectorSource } from 'ol/source';
-import Point from 'ol/geom/Point';
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
-import { Layer, Vector as VectorLayer } from 'ol/layer';
+import { Fill, Stroke, Style } from 'ol/style';
+import { Vector as VectorLayer } from 'ol/layer';
 import View from 'ol/View';
 import { fromLonLat } from 'ol/proj';
-import { type FC, useEffect, useState, type HTMLAttributes } from 'react';
-import type MapBrowserEvent from 'ol/MapBrowserEvent';
+import { type FC, useEffect, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
 import type { ColorLike } from 'ol/colorlike';
-import { readData } from '@/app/utils/read-items';
-
-type Location = {
-  name: string;
-  lon: string;
-  lat: string;
-  offsetX: number;
-  offsetY: number;
-  [key: string]: any;
-};
+import {
+  Modify,
+  Select,
+  Snap,
+  defaults as defaultInteractions,
+  DragRotateAndZoom,
+} from 'ol/interaction';
+import { click } from 'ol/events/condition';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   mapColor?: ColorLike;
@@ -30,61 +26,18 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   markerColor?: ColorLike;
 }
 
-enum StyleType {
-  Polygon = 'Polygon',
-  MultiPolygon = 'Multipolygon',
-  geoMarker = 'geoMarker',
-  Point = 'Point',
-  MultiPoint = 'MultiPoint',
-  LineString = 'LineString',
-  LinearRing = 'LinearRing',
-  MultiLineString = 'MultiLineString',
-  GeometryCollection = 'GeometryCollection',
-}
-
-const markerStyle = (color: string) => {
-  if (color == 'red') {
-    return new Style({
-      image: new CircleStyle({
-        radius: 10.5,
-        fill: new Fill({ color: 'rgba(255, 0, 0, 1)' }),
-      }),
-    });
-  } else {
-    return new Style({
-      image: new CircleStyle({
-        radius: 6.5,
-        fill: new Fill({ color: 'rgba(187, 205, 81, 1)' }),
-      }),
-    });
-  }
-};
-
 export const CustomMapSection: FC<Props> = ({
   mapColor,
   trendlineColor,
   markerColor,
   ...props
 }) => {
-  let hit = null;
-  let element = '';
-  // const [mapLabel, setMapLabel] = useState<String | number | undefined>('')
-  // const [markerId, setMarkerId] = useState<number | undefined>()
-
-  const [locations, setLocations] = useState<Location[]>([]);
   useEffect(() => {
-    readData('stoffklasse', {}).then((productData: any[]) => {
-      const locations =
-        productData[0].locations.length > 0
-          ? productData[0].locations.map((elem: any) => elem.locations_id)
-          : [];
-      createMap(locations);
-      setLocations(locations);
-    });
+    createMap();
   }, []);
 
-  function createMap(locations: Location[]) {
-    const markers = createMarker(locations);
+  function createMap() {
+    //TODO: Create pie chart as markers
     const styleFunction: any = function (feature: Feature) {
       // const hello: keyof typeof StyleType = feature!.getGeometry()!.getType()
       let style: Style = new Style({});
@@ -120,140 +73,51 @@ export const CustomMapSection: FC<Props> = ({
       return style;
     };
 
+    const source = new VectorSource({
+      url: '/geo/de_niedrig.geo.json',
+      format: new GeoJSON(),
+    });
+
     const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: markers,
-        url: '/geo/de_niedrig.geo.json',
-        format: new GeoJSON(),
-      }),
+      source,
       style: styleFunction,
     });
 
-    const zoom = () => {
-      if (window.innerWidth <= 660)
-        return (5.5 * Math.log(window.innerWidth)) / Math.log(500);
-      if (window.innerWidth <= 768) {
-        return 5.74;
-      }
-      if (window.innerWidth <= 1024)
-        return (5.3 * Math.log(window.innerWidth)) / Math.log(768);
-      return 5.7;
-    };
+    const select = new Select({
+      condition: click,
+      style: new Style({
+        fill: new Fill({
+          color: '#eeeeee',
+        }),
+        stroke: new Stroke({
+          color: 'rgba(255, 255, 255, 0.7)',
+          width: 2,
+        }),
+      }),
+    });
 
-    const map = new Map({
+    const modify = new Modify({
+      features: select.getFeatures(),
+    });
+
+    const snap = new Snap({
+      source: source,
+    });
+
+    new Map({
       target: 'map',
       layers: [vectorLayer],
       view: new View({
         center: fromLonLat([10.682127, 50.510924]),
-        zoom: zoom(),
+        zoom: 5.9,
       }),
-      controls: [],
-      interactions: [],
+      interactions: defaultInteractions().extend([
+        new DragRotateAndZoom(),
+        select,
+        modify,
+        snap,
+      ]),
     });
-
-    window.onresize = () => {
-      console.log('resize1');
-      map.setView(
-        new View({
-          center: fromLonLat([10.682127, 50.510924]),
-          zoom: zoom(),
-        })
-      );
-    };
-
-    const updateMarkerStyle = (feature: Feature) => {
-      // console.log(feature.setStyle(new Style(feature.getStyle().getText())))
-      feature.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 4.5,
-            fill: new Fill({ color: 'red' }),
-            stroke: new Stroke({
-              color: 'red',
-              width: 2,
-            }),
-          }),
-        })
-      );
-    };
-
-    let selected: Feature | null = null;
-    let currentStyle: Style | CircleStyle = new Style({
-      fill: new Fill({
-        color: '#eeeeee',
-      }),
-      stroke: new Stroke({
-        color: 'rgba(255, 255, 255, 0.7)',
-        width: 2,
-      }),
-    });
-    const selectStyle = new Style({
-      fill: new Fill({
-        color: '#eeeeee',
-      }),
-      stroke: new Stroke({
-        color: 'rgba(255, 255, 255, 0.7)',
-        width: 2,
-      }),
-    });
-
-    // map.on("pointer", function (this: Map, evt: MapBrowserEvent<PointerEvent>) {
-    //   if (selected != null) {
-    //     selected.setStyle(
-    //       new Style({
-    //         image: new CircleStyle({
-    //           radius: 6.5,
-    //           fill: new Fill({ color: markerColor || "rgba(187, 205, 81, 1)" })
-    //         })
-    //       })
-    //     );
-    //     selected = null;
-    //   }
-    //   hit = this.forEachFeatureAtPixel(evt.pixel, (feature: any, layer: Layer) => {
-    //     // setMapLabel(feature.getId())
-    //     if (feature.getGeometry()?.getType() === "Point") {
-    //       selected = feature;
-    //       currentStyle = feature.getStyle().getImage() as CircleStyle;
-    //       feature.setStyle(markerStyle("red"));
-    //       return true;
-    //     }
-    //   });
-    //   console.log("tupel: ", hit, " ,", element);
-    //   if (hit) {
-    //     this.getTargetElement().style.cursor = "pointer";
-    //   } else {
-    //     this.getTargetElement().style.cursor = "";
-    //   }
-    // });
-  }
-
-  function createMarker(locations: Location[]) {
-    let markers: any[] = [];
-    locations.forEach((element, index) => {
-      let city = new Feature({
-        geometry: new Point(
-          fromLonLat([Number(element.lon), Number(element.lat)])
-        ),
-      });
-      city.setId('marker-' + index);
-      city.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 6.5,
-            fill: new Fill({ color: markerColor || 'rgba(187, 205, 81, 1)' }),
-          }),
-          // text: new Text({
-          //   font: '12px Calibri,sans-serif',
-          //   overflow: true,
-          //   text: element.name,
-          //   offsetX: element.offsetX,
-          //   offsetY: element.offsetY,
-          // }),
-        })
-      );
-      markers.push(city);
-    });
-    return markers;
   }
 
   return (
