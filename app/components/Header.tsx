@@ -13,7 +13,7 @@ const Header: React.FC = () => {
 
         {/* Avatar */}
         <div style={styles.avatar}>
-          <img src="" alt="User Avatar" style={styles.avatarImage} />
+          {/* <img src="" alt="User Avatar" style={styles.avatarImage} /> */}
         </div>
       </nav>
     </header>
