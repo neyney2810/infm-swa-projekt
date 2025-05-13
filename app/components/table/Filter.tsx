@@ -2,20 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTableContext } from './Context';
-import { Bundesland } from '@/app/types';
 
 const Filter: React.FC = () => {
   const { filter, setFilter } = useTableContext();
-  const [bundesland, setBundesland] = useState<string | null>(
-    filter.bundesland
-  );
+  const [stoffgruppe, setStoffgruppe] = useState<string | null>(null);
   const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(null);
   const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<
     { id: number; name: string }[]
   >([]);
+  const [stoffgruppeOptions, setStoffgruppeOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchWirtschaftszweigOptions = async () => {
+    const fetchMetaData = async () => {
       try {
         const response = await fetch('/api/meta');
         if (!response.ok) {
@@ -23,16 +21,17 @@ const Filter: React.FC = () => {
         }
         const data = await response.json();
         setWirtschaftszweigOptions(data.wirtschaftszweig || []);
+        setStoffgruppeOptions(data.stoffgruppe || []);
       } catch (error) {
         console.error('Error fetching Wirtschaftszweig options:', error);
       }
     };
 
-    fetchWirtschaftszweigOptions();
+    fetchMetaData();
   }, []);
 
-  const handleBundeslandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBundesland(e.target.value || null);
+  const handleStoffgruppeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStoffgruppe(e.target.value || null);
   };
 
   const handleWirtschaftszweigChange = (
@@ -44,19 +43,19 @@ const Filter: React.FC = () => {
   return (
     <div className="grid grid-cols-2 gap-4 p-4 border border-gray-300 rounded-md">
       <div className="col-span-1 flex flex-row items-center gap-2">
-        <label htmlFor="bundesland" className="font-medium">
-          Bundesland:
+        <label htmlFor="stoffgruppe" className="font-medium">
+          Stoffgruppe:
         </label>
         <select
-          id="bundesland"
-          value={bundesland || ''}
-          onChange={handleBundeslandChange}
-          className="border border-gray-300 rounded-md px-2 py-1"
+          id="stoffgruppe"
+          value={stoffgruppe || ''}
+          onChange={handleStoffgruppeChange}
+          className="border border-gray-300 rounded-md px-2 py-1 w-full"
         >
-          <option value="">Select Bundesland</option>
-          {Object.entries(Bundesland).map(([key, value]) => (
-            <option key={key} value={value}>
-              {value}
+          <option value="">Select Stoffgruppe</option>
+          {stoffgruppeOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
             </option>
           ))}
         </select>

@@ -6,7 +6,8 @@ import { NextResponse } from 'next/server';
 export async function GET(req: Request) {
   try {
     const options = await getWirtschaftszweigOptions();
-    return NextResponse.json({ wirtschaftszweig: options });
+    const stoffgruppe = await getStoffgruppeOptions();
+    return NextResponse.json({ wirtschaftszweig: options, stoffgruppe });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch Wirtschaftszweig options' },
@@ -40,6 +41,34 @@ export async function getWirtschaftszweigOptions(): Promise<
           name,
         }));
 
+        resolve(options);
+      },
+      error: (error) => {
+        reject(error);
+      },
+    });
+  });
+}
+
+async function getStoffgruppeOptions(): Promise<string[]> {
+  const filePath = path.join(process.cwd(), 'public', 'utils', 'data-copy.csv');
+  const stoffgruppeSet = new Set<string>();
+
+  return new Promise((resolve, reject) => {
+    const fileStream = fs.createReadStream(filePath);
+
+    Papa.parse(fileStream, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        results.data.forEach((row: any) => {
+          if (row['Stoffgruppe']) {
+            stoffgruppeSet.add(row['Stoffgruppe']);
+          }
+        });
+
+        // Convert the Set to an array
+        const options = Array.from(stoffgruppeSet);
         resolve(options);
       },
       error: (error) => {
