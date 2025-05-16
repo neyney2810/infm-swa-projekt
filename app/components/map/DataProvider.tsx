@@ -1,7 +1,7 @@
 import { MarkerData } from '@/app/types';
 import Map from './Map';
 
-export async function DataProvider() {
+export function DataProvider() {
   // This function is a placeholder for the data provider logic.
   // You can implement your data fetching and processing logic here.
   // For example, you might want to fetch data from an API or a database.
