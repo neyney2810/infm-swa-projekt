@@ -1,4 +1,4 @@
-// Get all polutant data filter by industry -> Filter all the data which has a Kennzahl and Stoffgruppe = Insgesamt
+// Get all pollutant data filter by industry -> Filter all the data which has a Kennzahl and Stoffgruppe = Insgesamt
 
 import { NextResponse } from 'next/server';
 import Papa from 'papaparse';
