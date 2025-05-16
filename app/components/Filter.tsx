@@ -1,16 +1,23 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTableContext } from './Context';
+import { useRouter } from 'next/navigation';
 
-const Filter: React.FC = () => {
-  const { filter, setFilter } = useTableContext();
+type FilterProps = {
+  stoffgruppe?: string | null;
+  wirtschaftszweig?: string | null;
+};
+
+const Filter: React.FC<FilterProps> = () => {
+  const router = useRouter();
   const [stoffgruppe, setStoffgruppe] = useState<string | null>(null);
   const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(null);
   const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<
     { id: number; name: string }[]
   >([]);
-  const [stoffgruppeOptions, setStoffgruppeOptions] = useState<string[]>([]);
+  const [stoffgruppeOptions, setStoffgruppeOptions] = useState<
+    { id: number; name: string }[]
+  >([]);
 
   useEffect(() => {
     const fetchMetaData = async () => {
@@ -31,13 +38,33 @@ const Filter: React.FC = () => {
   }, []);
 
   const handleStoffgruppeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStoffgruppe(e.target.value || null);
+    const selectedValue = e.target.value || null;
+    setStoffgruppe(selectedValue);
+
+    // Update the URL with the selected stoffgruppe
+    const params = new URLSearchParams(window.location.search);
+    if (selectedValue) {
+      params.set('stoffgruppe', selectedValue);
+    } else {
+      params.delete('stoffgruppe');
+    }
+    router.push(`?${params.toString()}`);
   };
 
   const handleWirtschaftszweigChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
-    setWirtschaftszweig(e.target.value || null);
+    const selectedValue = e.target.value || null;
+    setWirtschaftszweig(selectedValue);
+
+    // Update the URL with the selected wirtschaftszweig
+    const params = new URLSearchParams(window.location.search);
+    if (selectedValue) {
+      params.set('wirtschaftszweig', selectedValue);
+    } else {
+      params.delete('wirtschaftszweig');
+    }
+    router.push(`?${params.toString()}`);
   };
 
   return (
@@ -53,9 +80,9 @@ const Filter: React.FC = () => {
           className="border border-gray-300 rounded-md px-2 py-1 w-full"
         >
           <option value="">Select Stoffgruppe</option>
-          {stoffgruppeOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
+          {stoffgruppeOptions.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
             </option>
           ))}
         </select>
@@ -71,8 +98,8 @@ const Filter: React.FC = () => {
           className="border border-gray-300 rounded-md px-2 py-1 w-full"
         >
           <option value="">Select Wirtschaftszweig</option>
-          {wirtschaftszweigOptions.map((option, index) => (
-            <option key={option.id} value={option.name}>
+          {wirtschaftszweigOptions.map((option) => (
+            <option key={option.id} value={option.id}>
               {option.name}
             </option>
           ))}

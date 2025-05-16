@@ -1,8 +1,8 @@
 'use client';
 
 interface MarkerProps {
-  innerValues: number[];
-  outerValues: number[];
+  innerValue: number;
+  values: number[];
   colors: string[];
   radius: number;
   hole?: number;
@@ -22,8 +22,8 @@ class MarkerCreator {
 
   createPiechart(options: MarkerProps): HTMLCanvasElement {
     const {
-      innerValues,
-      outerValues,
+      innerValue,
+      values,
       colors,
       radius,
       hole = 0.6,
@@ -40,7 +40,7 @@ class MarkerCreator {
     }
 
     // Draw outer pie chart
-    this.drawPieChart(outerValues, colors, stroke);
+    this.drawPieChart(values, colors, stroke);
 
     // Draw inner hole
     if (hole > 0) {
