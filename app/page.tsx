@@ -1,16 +1,17 @@
-import { TableProvider } from "./components/table/Context";
-import Table from "./components/table/Table";
-import Filter from "./components/table/Filter";
-import CustomMapSection from "./components/Map";
-import Paging from "./components/table/Paging";
+import { TableProvider } from './components/table/Context';
+import Table from './components/table/Table';
+import Filter from './components/table/Filter';
+import CustomMapSection from './components/map/Map';
+import Paging from './components/table/Paging';
+import { DataProvider } from './components/map/DataProvider';
 
 export default function Home() {
   return (
     <TableProvider>
-      <div className="grid grid-cols-12 gap-8 min-h-screen p-8 sm:p-20">
+      <div className="grid grid-cols-12 gap-8 min-h-screen sm:p-8">
         {/* Left Column: Map */}
         <div className="flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4">
-          <CustomMapSection />
+          <DataProvider />
         </div>
 
         {/* Right Column: Table and Filter */}
