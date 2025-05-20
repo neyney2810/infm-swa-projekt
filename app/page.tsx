@@ -64,7 +64,7 @@ export default async function Home({
 
         {/* Right Column: Table and Filter */}
         <div className="flex flex-col gap-8 col-span-6 md:col-span-7">
-          <Filter stoffgruppe={null} wirtschaftszweig={null} />
+          <Filter />
           <div className="overflow-x-auto">
             <Table />
           </div>

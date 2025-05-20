@@ -3,15 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-type FilterProps = {
-  stoffgruppe?: string | null;
-  wirtschaftszweig?: string | null;
-};
-
-const Filter: React.FC<FilterProps> = () => {
+const Filter: React.FC = () => {
   const router = useRouter();
-  const [stoffgruppe, setStoffgruppe] = useState<string | null>(null);
-  const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(null);
+  const [stoffgruppe, setStoffgruppe] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('stoffgruppe');
+  });
+  const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(
+    () => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('wirtschaftszweig');
+    },
+  );
   const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<
     { id: number; name: string }[]
   >([]);
