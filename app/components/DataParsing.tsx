@@ -74,7 +74,7 @@ export function prepareHeader(file: string) {
 
 export function ReadCSVFromServer() 
 {
-  var data = prepareHeader("E:\\Github-Projekte\\infm-swa-projekt\\public\\utils\\32421-0011_00 (2).csv")
+  var data = prepareHeader("E:\\Github-Projekte\\infm-swa-projekt\\public\\utils\\data.csv")
   return CSVReader(data).then(function(results) {
     alert(JSON.stringify(results)); /*replace with display function*/})
 }
