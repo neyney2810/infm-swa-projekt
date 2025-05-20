@@ -1,15 +1,28 @@
-import ReadCSVFromServer from "./components/DataParsing";
-import DisplayButton from "./components/DataParsing";
-import DataFetching from "./components/DataFetching";
-import CSVReader from "./components/DataParsing";
-import Map from "./components/Map";
+import { TableProvider } from './components/table/Context';
+import Table from './components/table/Table';
+import Filter from './components/table/Filter';
+import CustomMapSection from './components/map/Map';
+import Paging from './components/table/Paging';
+import { DataProvider } from './components/map/DataProvider';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <DataFetching />
-      </main>
-    </div>
+    <TableProvider>
+      <div className="grid grid-cols-12 gap-8 min-h-screen sm:p-8">
+        {/* Left Column: Map */}
+        <div className="flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4">
+          <DataProvider />
+        </div>
+
+        {/* Right Column: Table and Filter */}
+        <div className="flex flex-col gap-8 col-span-6 md:col-span-7">
+          <Filter />
+          <div className="overflow-x-auto">
+            <Table />
+          </div>
+          <Paging />
+        </div>
+      </div>
+    </TableProvider>
   );
 }
