@@ -54,3 +54,20 @@ export function DataParsing(data: string) {
     </CSVReader>
   );
 }
+export function prepareHeader(file: string) {
+  var rawData = readFileSync(file , "utf8");
+  var usableData = rawData.replace(existingHeaders, targetHeaders).replace(existingFooters, targetFooters).replace(zeroValue, zeroString);
+  return usableData;
+}
+
+export function ReadCSVFromServer() 
+{
+  var data = prepareHeader("E:\\Github-Projekte\\infm-swa-projekt\\public\\utils\\data.csv")
+  return CSVReader(data).then(function(results) {
+    alert(JSON.stringify(results)); /*replace with display function*/})
+}
+
+export default function DisplayButton()
+{
+  return <button type="button" {...ReadCSVFromServer()}>Read and alert</button>
+}
