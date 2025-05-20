@@ -42,7 +42,7 @@ export const Map: FC<Props> = ({
     markers?.forEach((markerdata, index) => {
       const pieChart = new Feature({
         geometry: new Point(
-          fromLonLat([Number(markerdata.lon), Number(markerdata.lat)])
+          fromLonLat([Number(markerdata.lon), Number(markerdata.lat)]),
         ),
       });
       pieChart.setId('marker-' + index);
@@ -50,15 +50,15 @@ export const Map: FC<Props> = ({
         return new Style({
           image: new Icon({
             img: new MarkerCreator().createPiechart({
-              innerValues: markerdata.innerValues,
-              outerValues: markerdata.outerValues,
+              innerValue: markerdata.innerValue,
+              values: markerdata.values,
               colors: ['#00a64c', '#fcb900', '#ae328e', '#f50800', '#2962ff'],
               radius: markerdata.radius,
               stroke: markerdata.stroke,
             }),
           }),
           text: new Text({
-            text: '123',
+            text: markerdata.innerValue.toString(),
             fill: new Fill({ color: '#000' }),
           }),
         });

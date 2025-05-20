@@ -32,8 +32,8 @@ export type DataUnit = {
 };
 
 export type MarkerData = {
-  innerValues: number[];
-  outerValues: number[];
+  values: number[];
+  innerValue: number;
   radius: number;
   stroke?: number;
   lon: number;
@@ -45,3 +45,9 @@ export type BundeslandData = {
   gesamtAusstoss: number;
   einzelAusstoss: { id: string; name: string; value: number }[]; // id: Kennzahl, value: Verwendung, name: Wirtschaftszweig
 };
+
+export type FilterT = {
+  bundesland: Bundesland | null;
+  wirtschaftszweig: string | null;
+  stoffgruppe: string | null;
+}
