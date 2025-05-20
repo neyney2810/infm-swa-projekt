@@ -66,7 +66,7 @@ export default async function Home({
         <div className="flex flex-col gap-8 col-span-6 md:col-span-7">
           <Filter />
           <div className="overflow-x-auto">
-            <Table />
+            <Table tableData={data} />
           </div>
           <Paging />
         </div>
