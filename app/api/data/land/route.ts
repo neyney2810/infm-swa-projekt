@@ -10,12 +10,12 @@ export async function GET(request: Request) {
       process.cwd(),
       'public',
       'utils',
-      'data-copy.csv'
+      'data.csv'
     );
 
     // Read the CSV file
     // https://www.npmjs.com/package/windows-1252
-    const fileContent = await fs.readFile(filePath, 'latin1');
+    const fileContent = await fs.readFile(filePath, 'utf-8');
 
     // Parse the CSV content
     const parsedData = Papa.parse(fileContent, {

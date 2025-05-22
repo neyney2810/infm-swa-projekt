@@ -25,7 +25,7 @@ export function prepareHeader(file: string) {
 }
 
 export function ReadCSVFromServer() {
-  var data = prepareHeader("/utils/data-copy.csv");
+  var data = prepareHeader("/utils/data.csv");
   return CSVReader(data).then(function (results) {
     alert(JSON.stringify(results)); /*replace with display function*/
   });
@@ -33,7 +33,7 @@ export function ReadCSVFromServer() {
 
 export async function GET() {
   var currentDir = process.cwd();
-  var rawData = prepareHeader(`${currentDir}/public/utils/data-copy.csv`);
+  var rawData = prepareHeader(`${currentDir}/public/utils/data.csv`);
   var data = Papa.parse(rawData, { delimiter: ";", dynamicTyping: true, header: true });
   return Response.json({ data });
 }

@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 export async function getWirtschaftszweigOptions(): Promise<
   { id: string; name: string }[]
 > {
-  const filePath = path.join(process.cwd(), 'public', 'utils', 'data-copy.csv');
+  const filePath = path.join(process.cwd(), 'public', 'utils', 'data.csv');
   const wirtschaftszweigMap = new Map<string, string>();
 
   return new Promise((resolve, reject) => {
@@ -60,7 +60,7 @@ export async function getWirtschaftszweigOptions(): Promise<
 }
 
 async function getStoffgruppeOptions(): Promise<{ id: string; name: string }[]> {
-  const filePath = path.join(process.cwd(), 'public', 'utils', 'data-copy.csv');
+  const filePath = path.join(process.cwd(), 'public', 'utils', 'data.csv');
   const stoffgruppeMap = new Map<string, string>();
 
   return new Promise((resolve, reject) => {
