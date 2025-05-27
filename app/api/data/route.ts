@@ -44,7 +44,6 @@ export async function GET(request: Request) {
         return stoffgruppeMatch;
       });
     }
-
     // If only Wirtschaftszweig is provided, return all based on Wirtschaftszweig (each single wirtschaftszweig + insgesamt)
     if (wirtschaftszweig && (!stoffgruppe || stoffgruppe == "Insgesamt")) {
       filteredData = parsedData.filter((row) => {
@@ -53,7 +52,6 @@ export async function GET(request: Request) {
         return wirtschaftszweigMatch;
       });
     }
-
     // If both Wirtschaftszweig and Stoffgruppe are provided, filter based on both
     if (wirtschaftszweig && stoffgruppe && wirtschaftszweig !== "Insgesamt" && stoffgruppe !== "Insgesamt") {
       filteredData = parsedData.filter((row) => {
@@ -83,9 +81,12 @@ export async function GET(request: Request) {
     console.error('Error reading or parsing CSV file:', error);
     return NextResponse.json(
       { error: 'Failed to fetch and parse CSV data' },
-      { status: 500 }
+      { status: 500 },
     );
   }
+
 }
+
+
 
 export const dynamic = 'force-dynamic';
