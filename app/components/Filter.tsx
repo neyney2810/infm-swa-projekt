@@ -6,13 +6,19 @@ import { useRouter } from 'next/navigation';
 const Filter: React.FC = () => {
   const router = useRouter();
   const [stoffgruppe, setStoffgruppe] = useState<string | null>(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params =
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams();
     return params.get('stoffgruppe');
   });
   const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(
     () => {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('wirtschaftszweig');
+      const params =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search)
+          : new URLSearchParams();
+      return params.get('stoffgruppe');
     },
   );
   const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<

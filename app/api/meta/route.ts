@@ -37,14 +37,14 @@ export async function getWirtschaftszweigOptions(): Promise<
       skipEmptyLines: true,
       complete: (results) => {
         results.data.forEach((row: any) => {
-          if (row['Wirtschaftszweig'] && row['Kennzahl']) {
-            wirtschaftszweigMap.set(row['Wirtschaftszweig'], row['Kennzahl']);
+          if (row['Wirtschaftszweig']) {
+            wirtschaftszweigMap.set(row['Kennzahl'] || "Insgesamt", row['Wirtschaftszweig']);
           }
         });
 
         // Map each Wirtschaftszweig to an object with Kennzahl as ID
         const options = Array.from(wirtschaftszweigMap.entries()).map(
-          ([name, id]) => ({
+          ([id, name]) => ({
             id,
             name,
           })

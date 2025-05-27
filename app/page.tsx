@@ -4,7 +4,6 @@ import CustomMapSection from './components/map/Map';
 import Paging from './components/table/Paging';
 import { DataProvider } from './components/map/DataProvider';
 import Filter from './components/Filter';
-import { FilterT } from './types';
 
 export default async function Home({
   searchParams,
@@ -29,13 +28,12 @@ export default async function Home({
   try {
     const API_BASE_URL =
       process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(
-      `${API_BASE_URL}/api/data?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        cache: 'no-store',
-      },
-    );
+    const url = `${API_BASE_URL}/api/data?${queryParams.toString()}`;
+    console.log('Fetching data from:', url);
+    const response = await fetch(url, {
+      method: 'GET',
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch data');
