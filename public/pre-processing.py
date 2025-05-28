@@ -4,8 +4,8 @@ target = r".\public\utils\data.csv"
 target_trimmed = r".\public\utils\data_trimmed.csv"
 
 with codecs.open(location, "r", encoding="windows-1252") as infile, open(target , "w", encoding="utf-8") as outfile, open(target_trimmed, "w", encoding="utf-8") as outfile_trimmed:
-    outfile.write("Jahr;Bundesland;Kennzahl;Wirtschaftszweig;Stoffgruppe;Verwendung;VerwendungCO2;Einfuhr;EinfuhrCO2;Ausfuhr;AusfuhrCO2\n")
-    outfile_trimmed.write("Jahr;Bundesland;Kennzahl;Wirtschaftszweig;Stoffgruppe;Verwendung;VerwendungCO2;Einfuhr;EinfuhrCO2;Ausfuhr;AusfuhrCO2\n")
+    outfile.write("Jahr;Bundesland;Kennzahl;Wirtschaftszweig;Stoffgruppe;Verwendung(t);VerwendungCO2(1000t);Einfuhr(t);EinfuhrCO2(1000t);Ausfuhr(t);AusfuhrCO2(100t)\n")
+    outfile_trimmed.write("Jahr;Bundesland;Kennzahl;Wirtschaftszweig;Stoffgruppe;Verwendung(t);VerwendungCO2(1000t);Einfuhr(t);EinfuhrCO2(1000t);Ausfuhr(t);AusfuhrCO2(1000t)\n")
     for line in infile:
         if line.startswith("2"):
             trim_include = True
