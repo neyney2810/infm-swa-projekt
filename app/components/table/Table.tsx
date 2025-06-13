@@ -27,7 +27,7 @@ const Table: React.FC<TableProps> = ({ tableData }) => {
         </thead>
         <tbody>
           {tableData.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-gray-50">
+            <tr key={rowIndex} className={row.Wirtschaftszweig=="Insgesamt"||row.Stoffgruppe=="Insgesamt"?"hover:bg-red-50":"hover:bg-gray-50"}>
               {headers.map((header) => (
                 <td key={header} className="border border-gray-300 px-4 py-2">
                   {(row as Record<string, any>)[header]}
