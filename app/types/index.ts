@@ -38,6 +38,7 @@ export type MarkerData = {
   stroke?: number;
   lon: number;
   lat: number;
+  ids?: string[]; // IDs of the Kennzahlen for the pie chart
 };
 
 export type BundeslandData = {
@@ -57,3 +58,13 @@ export type MetaDataT = {
   wirtschaftszweig: string[];
   stoffgruppe: string[];
 }
+
+
+export type LegendItem = {
+  color: string;
+  name: string;
+};
+
+export type LegendProps = {
+  items: LegendItem[];
+};

@@ -1,7 +1,14 @@
 'use server';
 
-import { Bundesland, DataUnit, MarkerData, MetaDataT } from '@/app/types';
+import {
+  Bundesland,
+  DataUnit,
+  LegendItem,
+  MarkerData,
+  MetaDataT,
+} from '@/app/types';
 import Map from './Map';
+import Legend from './Legend';
 
 async function fetchMetaData(): Promise<MetaDataT | null> {
   const API_BASE_URL =
@@ -70,63 +77,62 @@ export async function DataProvider({
     // Wirtschaftszweig nicht gewählt, stoffgruppe ausgewählt -> Tortendiagramm mit Wirtschaftszweig auf Außenseite, größe wirtschaftszweig insgesamt
     if (!wirtschaftszweig && stoffgruppe && stoffgruppe !== 'Insgesamt') {
       // Convert pollutionData to MarkerData format
-      markerData = metaData.bundesland.map((data: { id: Bundesland; lat: any; lon: any; }) => {
-        const fetchedValue = pollutionData
-        .filter(
-          (item) =>
-            item.Bundesland === data.id &&
-            item.Stoffgruppe.split(' ')[0].toLowerCase() ===
-              stoffgruppe.toLowerCase(),
-        )
-        return {
-        labelData: fetchedValue.map((item) => ({
-          name: item.Wirtschaftszweig,
-          color: item.Wirtschaftszweig === 'Insgesamt' ? '#000000' :
-            metaData.wirtschaftszweig.includes(item.Wirtschaftszweig)
-              ? metaData.wirtschaftszweig.find((wz) => wz === item.Wirtschaftszweig) || '#000000'
-              : '#  00000', // Default color if not found
-        })),
-        values: 
-          fetchedValue.map((item) => item.Verwendung),
-        radius: 20,
-        stroke: 1,
-        lat: data.lat,
-        lon: data.lon,
-        innerValue:
-          pollutionData.find((item) => {
-            return (
+      markerData = metaData.bundesland.map(
+        (data: { id: Bundesland; lat: any; lon: any }) => {
+          const fetchedValue = pollutionData.filter(
+            (item) =>
               item.Bundesland === data.id &&
               item.Stoffgruppe.split(' ')[0].toLowerCase() ===
-                stoffgruppe.toLowerCase() &&
-              item.Wirtschaftszweig === 'Insgesamt'
-            );
-          })?.Verwendung || -1, // Placeholder for inner value
-      }});
+                stoffgruppe.toLowerCase(),
+          );
+          return {
+            values: fetchedValue.map((item) => item.Verwendung),
+            radius: 20,
+            stroke: 1,
+            lat: data.lat,
+            lon: data.lon,
+            ids: fetchedValue.map((item) => item.Kennzahl),
+            innerValue:
+              pollutionData.find((item) => {
+                return (
+                  item.Bundesland === data.id &&
+                  item.Stoffgruppe.split(' ')[0].toLowerCase() ===
+                    stoffgruppe.toLowerCase() &&
+                  item.Wirtschaftszweig === 'Insgesamt'
+                );
+              })?.Verwendung || -1, // Placeholder for inner value
+          };
+        },
+      );
       return markerData;
     }
     // Wirtschaftszweig ausgewählt, stoffgruppe nicht gewählt -> Tortendiagramm mit Stoffgruppe auf Außenseite, größe stoffgruppe insgesamt
     if (wirtschaftszweig && wirtschaftszweig !== 'Insgesamt' && !stoffgruppe) {
       // Convert pollutionData to MarkerData format
-      markerData = metaData.bundesland.map((data: { id: Bundesland; lat: any; lon: any; }) => ({
-        values: pollutionData
-          .filter(
+      markerData = metaData.bundesland.map(
+        (data: { id: Bundesland; lat: any; lon: any }) => {
+          const pData = pollutionData.filter(
             (item) =>
               item.Bundesland === data.id && item.Kennzahl === wirtschaftszweig,
-          )
-          .map((item) => item.Verwendung),
-        radius: 30,
-        stroke: 1,
-        lat: data.lat,
-        lon: data.lon,
-        innerValue:
-          pollutionData.find((item) => {
-            return (
-              item.Bundesland === data.id &&
-              item.Kennzahl === wirtschaftszweig &&
-              item.Stoffgruppe === 'Insgesamt'
-            );
-          })?.Verwendung || -1, // Placeholder for inner value
-      }));
+          );
+          return {
+            values: pData.map((item) => item.Verwendung),
+            radius: 30,
+            stroke: 1,
+            lat: data.lat,
+            lon: data.lon,
+            innerValue:
+              pollutionData.find((item) => {
+                return (
+                  item.Bundesland === data.id &&
+                  item.Kennzahl === wirtschaftszweig &&
+                  item.Stoffgruppe === 'Insgesamt'
+                );
+              })?.Verwendung || -1, // Placeholder for inner value
+            ids: pData.map((item) => item.Stoffgruppe),
+          };
+        },
+      );
       return markerData;
     }
     // Wirtschaftszweig gewählt, stoffgruppe gewählt -> punkt in größe
@@ -144,11 +150,13 @@ export async function DataProvider({
           radius: 25,
           stroke: 1,
           lat:
-            metaData.bundesland.find((data: { id: Bundesland; }) => data.id === item.Bundesland)
-              ?.lat || 0,
+            metaData.bundesland.find(
+              (data: { id: Bundesland }) => data.id === item.Bundesland,
+            )?.lat || 0,
           lon:
-            metaData.bundesland.find((data: { id: Bundesland; }) => data.id === item.Bundesland)
-              ?.lon || 0,
+            metaData.bundesland.find(
+              (data: { id: Bundesland }) => data.id === item.Bundesland,
+            )?.lon || 0,
           innerValue: item.Verwendung, // Use the value directly
         }));
       return markerData;
@@ -160,15 +168,16 @@ export async function DataProvider({
       radius: 20,
       stroke: 1,
       lat:
-        metaData.bundesland.find((data: { id: Bundesland; }) => data.id === item.Bundesland)?.lat ||
-        0,
+        metaData.bundesland.find(
+          (data: { id: Bundesland }) => data.id === item.Bundesland,
+        )?.lat || 0,
       lon:
-        metaData.bundesland.find((data: { id: Bundesland; }) => data.id === item.Bundesland)?.lon ||
-        0,
+        metaData.bundesland.find(
+          (data: { id: Bundesland }) => data.id === item.Bundesland,
+        )?.lon || 0,
       innerValue: item.Verwendung, // Use the value directly
     }));
   };
-
 
   return (
     <>

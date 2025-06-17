@@ -18,39 +18,47 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Fill, Stroke, Style, Text, Icon } from 'ol/style';
 import {
-  Modify,
-  Select,
-  Snap,
   defaults as defaultInteractions,
   DragRotateAndZoom,
 } from 'ol/interaction';
 import { click } from 'ol/events/condition';
 import { MarkerData } from '@/app/types';
 import MarkerCreator from './MarkerCreator';
+import Legend from './Legend';
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   mapColor?: string;
   trendlineColor?: string;
   markers?: MarkerData[];
   showType: MapShowStateType;
-  labelData: {id: string, name:string}[]
 }
 
 type MapShowStateType = 'point' | 'donut';
+
+const colorPalette = [
+  '#00a64c',
+  '#fcb900',
+  '#ae328e',
+  '#f50800',
+  '#2962ff',
+  '#ff6f00',
+  '#00bcd4',
+  '#8bc34a',
+  '#9c27b0',
+  '#ff9800',
+];
 
 export const Map: FC<Props> = ({
   mapColor,
   trendlineColor,
   markers,
-  labelData,
   showType,
   ...props
 }) => {
-  const colorPalette = ['#00a64c', '#fcb900', '#ae328e', '#f50800', '#2962ff', '#ff6f00', '#00bcd4', '#8bc34a', '#9c27b0', '#ff9800'];
-
   // const [mapShowState, setMapShowState] = useState<boolean>(true);
   const mapRef = useRef<OLMap | null>(null); // Persist the map instance
   const featureRef = useRef<VectorLayer | null>(null); // Persist the selected feature
+
   // Create map
   useEffect(() => {
     const source = new VectorSource({
@@ -110,6 +118,15 @@ export const Map: FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    let colorMap: Record<string, string> = {};
+    if (markers) {
+      markers.forEach((marker, index) => {
+        colorMap[marker.innerValue.toString()] =
+          colorPalette[index % colorPalette.length];
+      });
+    }
+    console.log('Color map:', colorMap);
+
     console.log('Map useEffect triggered', showType, featureRef.current);
     if (!mapRef.current) return;
     if (featureRef.current) {
@@ -127,13 +144,15 @@ export const Map: FC<Props> = ({
       });
       pieChart.setId('marker-' + index);
       pieChart.setStyle(() => {
-        markers.
+        let colors: string[] = (markerdata.ids ?? []).map(
+          (id) => colorMap[id] || colorPalette[0],
+        );
         return new Style({
           image: new Icon({
             img: new MarkerCreator().createPiechart({
               innerValue: markerdata.innerValue,
               values: markerdata.values,
-              colors: labelData,
+              colors: colors,
               radius: markerdata.radius,
               stroke: markerdata.stroke,
             }),
@@ -159,11 +178,10 @@ export const Map: FC<Props> = ({
 
   return (
     <div className={clsx('bg-white w-full h-full', props.className)}>
-      <div id="map" className="map w-full h-full relative">
-        {/* Legend for the map */}
-        <div className="absolute bottom-0 right-0 left-0 min-h-10 bg-amber-100">
-
-        </div>
+      <div id="map" className="map w-full h-full"></div>
+      {/* Legend for the map */}
+      <div className="absolute bottom-4 right-4 left-4 min-h-10 bg-amber-100">
+        <Legend items={[]} />
       </div>
     </div>
   );
