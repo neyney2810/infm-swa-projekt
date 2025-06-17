@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, type FC, type HTMLAttributes } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FC,
+  type HTMLAttributes,
+} from 'react';
 import clsx from 'clsx';
 import OLMap from 'ol/Map';
 import View from 'ol/View';
@@ -27,43 +33,28 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   trendlineColor?: string;
   markerColor?: string;
   markers?: MarkerData[];
+  showType: MapShowStateType;
 }
+
+type MapShowStateType = 'point' | 'donut';
 
 export const Map: FC<Props> = ({
   mapColor,
   trendlineColor,
   markerColor,
   markers,
+  showType,
   ...props
 }) => {
+  console.log(markers);
+  // const [mapShowState, setMapShowState] = useState<boolean>(true);
+  const mapRef = useRef<OLMap | null>(null); // Persist the map instance
+  const featureRef = useRef<VectorLayer | null>(null); // Persist the selected feature
+  // Create map
   useEffect(() => {
-    // Create a marker layer
-    const markerElems: Feature[] = [];
-    markers?.forEach((markerdata, index) => {
-      const pieChart = new Feature({
-        geometry: new Point(
-          fromLonLat([Number(markerdata.lon), Number(markerdata.lat)]),
-        ),
-      });
-      pieChart.setId('marker-' + index);
-      pieChart.setStyle(() => {
-        return new Style({
-          image: new Icon({
-            img: new MarkerCreator().createPiechart({
-              innerValue: markerdata.innerValue,
-              values: markerdata.values,
-              colors: ['#00a64c', '#fcb900', '#ae328e', '#f50800', '#2962ff'],
-              radius: markerdata.radius,
-              stroke: markerdata.stroke,
-            }),
-          }),
-          text: new Text({
-            text: markerdata.innerValue.toString(),
-            fill: new Fill({ color: '#000' }),
-          }),
-        });
-      });
-      markerElems.push(pieChart);
+    const source = new VectorSource({
+      url: '/geo/de_niedrig.geo.json',
+      format: new GeoJSON(),
     });
 
     const styleFunction: any = function (feature: Feature) {
@@ -101,43 +92,68 @@ export const Map: FC<Props> = ({
       return style;
     };
 
-    const source = new VectorSource({
-      url: '/geo/de_niedrig.geo.json',
-      format: new GeoJSON(),
-      features: markerElems,
-    });
-
     const vectorLayer = new VectorLayer({
       source,
       style: styleFunction,
     });
 
-    const select = new Select({
-      condition: click,
-      style: new Style({
-        fill: new Fill({ color: '#eeeeee' }),
-        stroke: new Stroke({ color: 'rgba(255, 255, 255, 0.7)', width: 2 }),
-      }),
-    });
-
-    const modify = new Modify({ features: select.getFeatures() });
-    const snap = new Snap({ source });
-
-    new OLMap({
+    mapRef.current = new OLMap({
       target: 'map',
       layers: [vectorLayer],
       view: new View({
         center: fromLonLat([10.682127, 50.510924]),
         zoom: 5.9,
       }),
-      interactions: defaultInteractions().extend([
-        new DragRotateAndZoom(),
-        select,
-        modify,
-        snap,
-      ]),
+      interactions: defaultInteractions().extend([new DragRotateAndZoom()]),
     });
-  }, [mapColor, trendlineColor, markers]);
+  }, []);
+
+  useEffect(() => {
+    console.log('Map useEffect triggered', showType, featureRef.current);
+    if (!mapRef.current) return;
+    if (featureRef.current) {
+      mapRef.current.removeLayer(featureRef.current);
+      featureRef.current = null;
+    }
+    // if (showType === 'donut') {
+    // Create a marker layer
+    const markerElems: Feature[] = [];
+    markers?.forEach((markerdata, index) => {
+      const pieChart = new Feature({
+        geometry: new Point(
+          fromLonLat([Number(markerdata.lon), Number(markerdata.lat)]),
+        ),
+      });
+      pieChart.setId('marker-' + index);
+      pieChart.setStyle(() => {
+        return new Style({
+          image: new Icon({
+            img: new MarkerCreator().createPiechart({
+              innerValue: markerdata.innerValue,
+              values: markerdata.values,
+              colors: ['#00a64c', '#fcb900', '#ae328e', '#f50800', '#2962ff'],
+              radius: markerdata.radius,
+              stroke: markerdata.stroke,
+            }),
+          }),
+          text: new Text({
+            text: markerdata.innerValue.toString(),
+            fill: new Fill({ color: '#000' }),
+          }),
+        });
+      });
+      markerElems.push(pieChart);
+    });
+    var vector = new VectorLayer({
+      source: new VectorSource({ features: markerElems }),
+    });
+
+    mapRef.current.addLayer(vector);
+    featureRef.current = vector;
+
+    // const snap = new Snap({ source });
+    // }
+  }, [showType, featureRef, markers]);
 
   return (
     <div className={clsx('bg-white w-full h-full', props.className)}>

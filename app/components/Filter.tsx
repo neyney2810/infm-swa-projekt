@@ -5,21 +5,21 @@ import { useRouter } from 'next/navigation';
 
 const Filter: React.FC = () => {
   const router = useRouter();
-  const [stoffgruppe, setStoffgruppe] = useState<string | null>(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('stoffgruppe');
-  });
-  const [wirtschaftszweig, setWirtschaftszweig] = useState<string | null>(
-    () => {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('wirtschaftszweig');
-    },
+  const params =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams();
+  const defaultStoffgruppe = params.get('stoffgruppe') || 'Insgesamt';
+  const defaultWirtschaftszweig = params.get('wirtschaftszweig') || 'Insgesamt';
+  const [stoffgruppe, setStoffgruppe] = useState<string>(defaultStoffgruppe);
+  const [wirtschaftszweig, setWirtschaftszweig] = useState<string>(
+    defaultWirtschaftszweig,
   );
   const [wirtschaftszweigOptions, setWirtschaftszweigOptions] = useState<
-    { id: number; name: string }[]
+    { id: string; name: string }[]
   >([]);
   const [stoffgruppeOptions, setStoffgruppeOptions] = useState<
-    { id: number; name: string }[]
+    { id: string; name: string }[]
   >([]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Filter: React.FC = () => {
   }, []);
 
   const handleStoffgruppeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value || null;
+    const selectedValue = e.target.value;
     setStoffgruppe(selectedValue);
 
     // Update the URL with the selected stoffgruppe
@@ -57,9 +57,8 @@ const Filter: React.FC = () => {
   const handleWirtschaftszweigChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
-    const selectedValue = e.target.value || null;
+    const selectedValue = e.target.value;
     setWirtschaftszweig(selectedValue);
-
     // Update the URL with the selected wirtschaftszweig
     const params = new URLSearchParams(window.location.search);
     if (selectedValue) {
@@ -82,7 +81,6 @@ const Filter: React.FC = () => {
           onChange={handleStoffgruppeChange}
           className="border border-gray-300 rounded-md px-2 py-1 w-full"
         >
-          <option value="">Select Stoffgruppe</option>
           {stoffgruppeOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.name}
@@ -100,7 +98,6 @@ const Filter: React.FC = () => {
           onChange={handleWirtschaftszweigChange}
           className="border border-gray-300 rounded-md px-2 py-1 w-full"
         >
-          <option value="">Select Wirtschaftszweig</option>
           {wirtschaftszweigOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.name}
