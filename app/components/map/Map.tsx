@@ -184,7 +184,7 @@ export const Map: FC<Props> = ({
 
     // const snap = new Snap({ source });
     // }
-  }, [showType, featureRef, markers]);
+  }, [showType, markers]);
 
   return (
     <div className={clsx('bg-white w-full h-full', props.className)}>
