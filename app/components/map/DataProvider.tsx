@@ -98,7 +98,7 @@ export async function DataProvider({
                     stoffgruppe.toLowerCase() &&
                   item.Wirtschaftszweig === 'Insgesamt'
                 );
-              })?.Verwendung || -1, // Placeholder for inner value
+              })?.Verwendung || DEFAULT_INNER_VALUE, // Fallback for inner value
           };
         },
       );
