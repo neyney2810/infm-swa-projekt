@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     let filteredData: DataUnit[] = parsedData;
 
     // If only Stoffgruppe is provided, return all based on Stoffgruppe (each single stoffgruppe + insgesamt)
-    if (!wirtschaftszweig && stoffgruppe) {
+    if ((!wirtschaftszweig || wirtschaftszweig == "Insgesamt") && stoffgruppe) {
       filteredData = parsedData.filter((row) => {
         const stoffgruppeMatch =
           row.Stoffgruppe.split(' ')[0].toLowerCase() ===
@@ -41,18 +41,18 @@ export async function GET(request: Request) {
         return stoffgruppeMatch;
       });
     }
-
     // If only Wirtschaftszweig is provided, return all based on Wirtschaftszweig (each single wirtschaftszweig + insgesamt)
-    if (wirtschaftszweig && !stoffgruppe) {
+    if (wirtschaftszweig && (!stoffgruppe || stoffgruppe == "Insgesamt")) {
+
       filteredData = parsedData.filter((row) => {
         const wirtschaftszweigMatch =
           row.Kennzahl.toLowerCase() === wirtschaftszweig.toLowerCase();
         return wirtschaftszweigMatch;
       });
     }
-
     // If both Wirtschaftszweig and Stoffgruppe are provided, filter based on both
-    if (wirtschaftszweig && stoffgruppe) {
+    if (wirtschaftszweig && stoffgruppe && wirtschaftszweig !== "Insgesamt" && stoffgruppe !== "Insgesamt") {
+
       filteredData = parsedData.filter((row) => {
         const wirtschaftszweigMatch =
           row.Kennzahl.toLowerCase() === wirtschaftszweig.toLowerCase();
@@ -80,9 +80,12 @@ export async function GET(request: Request) {
     console.error('Error reading or parsing CSV file:', error);
     return NextResponse.json(
       { error: 'Failed to fetch and parse CSV data' },
-      { status: 500 }
+      { status: 500 },
     );
   }
+
 }
+
+
 
 export const dynamic = 'force-dynamic';

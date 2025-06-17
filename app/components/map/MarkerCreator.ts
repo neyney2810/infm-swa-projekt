@@ -40,6 +40,7 @@ class MarkerCreator {
     }
 
     // Draw outer pie chart
+    
     this.drawPieChart(values, colors, stroke);
 
     // Draw inner hole

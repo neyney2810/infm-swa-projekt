@@ -9,17 +9,16 @@ type TableProps = {
 };
 
 const Table: React.FC<TableProps> = ({ tableData, tableHeader }) => {
-  const headers = tableHeader ? Object.keys(tableData) : [];
   const keyHeaders = Object.keys(tableHeader || {}) as (keyof DataUnit)[];
   return (
-    <div className="">
+    <div className="overflow-auto border border-gray-300">
       <table className="min-w-full border-collapse border border-gray-300">
-        <thead>
+        <thead className="sticky top-0 bg-gray-100">
           <tr>
             {keyHeaders.map((header) => (
               <th
                 key={header}
-                className="border border-gray-300 px-4 py-2 text-left bg-gray-100"
+                className="border border-gray-300 px-4 py-2 text-left"
               >
                 {tableHeader ? tableHeader[header] : ''}
               </th>
@@ -28,7 +27,15 @@ const Table: React.FC<TableProps> = ({ tableData, tableHeader }) => {
         </thead>
         <tbody>
           {tableData.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-gray-50">
+            <tr
+              key={rowIndex}
+              className={`hover:bg-gray-50 ${
+                row.Stoffgruppe === 'Insgesamt' ||
+                row.Wirtschaftszweig === 'Insgesamt'
+                  ? 'bg-yellow-100' // Highlight row with a yellow background
+                  : ''
+              }`}
+            >
               {keyHeaders.map((header) => (
                 <td key={header} className="border border-gray-300 px-4 py-2">
                   {String((row as Record<string, any>)[header])}
