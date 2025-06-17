@@ -1,14 +1,7 @@
 'use server';
 
-import {
-  Bundesland,
-  DataUnit,
-  LegendItem,
-  MarkerData,
-  MetaDataT,
-} from '@/app/types';
+import { Bundesland, DataUnit, MarkerData, MetaDataT } from '@/app/types';
 import Map from './Map';
-import Legend from './Legend';
 
 async function fetchMetaData(): Promise<MetaDataT | null> {
   const API_BASE_URL =
@@ -75,7 +68,11 @@ export async function DataProvider({
   ) => {
     let markerData: MarkerData[] = [];
     // Wirtschaftszweig nicht gewählt, stoffgruppe ausgewählt -> Tortendiagramm mit Wirtschaftszweig auf Außenseite, größe wirtschaftszweig insgesamt
-    if (!wirtschaftszweig && stoffgruppe && stoffgruppe !== 'Insgesamt') {
+    if (
+      (wirtschaftszweig == 'Insgesamt' || !wirtschaftszweig) &&
+      stoffgruppe &&
+      stoffgruppe !== 'Insgesamt'
+    ) {
       // Convert pollutionData to MarkerData format
       markerData = metaData.bundesland.map(
         (data: { id: Bundesland; lat: any; lon: any }) => {
@@ -83,7 +80,8 @@ export async function DataProvider({
             (item) =>
               item.Bundesland === data.id &&
               item.Stoffgruppe.split(' ')[0].toLowerCase() ===
-                stoffgruppe.toLowerCase(),
+                stoffgruppe.toLowerCase() &&
+              item.Wirtschaftszweig !== 'Insgesamt',
           );
           return {
             values: fetchedValue.map((item) => item.Verwendung),
@@ -91,7 +89,7 @@ export async function DataProvider({
             stroke: 1,
             lat: data.lat,
             lon: data.lon,
-            ids: fetchedValue.map((item) => item.Kennzahl),
+            ids: fetchedValue.map((item) => item.Wirtschaftszweig),
             innerValue:
               pollutionData.find((item) => {
                 return (
@@ -107,14 +105,21 @@ export async function DataProvider({
       return markerData;
     }
     // Wirtschaftszweig ausgewählt, stoffgruppe nicht gewählt -> Tortendiagramm mit Stoffgruppe auf Außenseite, größe stoffgruppe insgesamt
-    if (wirtschaftszweig && wirtschaftszweig !== 'Insgesamt' && !stoffgruppe) {
+    if (
+      wirtschaftszweig &&
+      wirtschaftszweig !== 'Insgesamt' &&
+      (!stoffgruppe || stoffgruppe === 'Insgesamt')
+    ) {
       // Convert pollutionData to MarkerData format
       markerData = metaData.bundesland.map(
         (data: { id: Bundesland; lat: any; lon: any }) => {
           const pData = pollutionData.filter(
             (item) =>
-              item.Bundesland === data.id && item.Kennzahl === wirtschaftszweig,
+              item.Bundesland === data.id &&
+              item.Kennzahl === wirtschaftszweig &&
+              item.Stoffgruppe !== 'Insgesamt',
           );
+
           return {
             values: pData.map((item) => item.Verwendung),
             radius: 30,

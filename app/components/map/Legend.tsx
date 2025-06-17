@@ -5,7 +5,7 @@ import React from 'react';
 
 const Legend: React.FC<LegendProps> = ({ items }) => {
   return (
-    <div className="flex flex-row items-center gap-4 border-t border-gray-300 bg-white">
+    <div className="flex flex-row items-center gap-4 border-t p-4 border-gray-300 bg-white">
       {items.map((item, index) => (
         <div key={index} className="flex flex-row items-center gap-2">
           <div

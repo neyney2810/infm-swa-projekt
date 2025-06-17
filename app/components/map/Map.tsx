@@ -21,7 +21,6 @@ import {
   defaults as defaultInteractions,
   DragRotateAndZoom,
 } from 'ol/interaction';
-import { click } from 'ol/events/condition';
 import { MarkerData } from '@/app/types';
 import MarkerCreator from './MarkerCreator';
 import Legend from './Legend';
@@ -58,6 +57,7 @@ export const Map: FC<Props> = ({
   // const [mapShowState, setMapShowState] = useState<boolean>(true);
   const mapRef = useRef<OLMap | null>(null); // Persist the map instance
   const featureRef = useRef<VectorLayer | null>(null); // Persist the selected feature
+  const [colorMap, setColorMap] = useState<Record<string, string>>({});
 
   // Create map
   useEffect(() => {
@@ -119,13 +119,23 @@ export const Map: FC<Props> = ({
 
   useEffect(() => {
     let colorMap: Record<string, string> = {};
-    if (markers) {
-      markers.forEach((marker, index) => {
-        colorMap[marker.innerValue.toString()] =
-          colorPalette[index % colorPalette.length];
-      });
+    let allIds = new Set(
+      markers?.reduce((acc, marker) => {
+        if (marker.ids) {
+          return acc.concat(marker.ids);
+        }
+        return acc;
+      }, [] as string[]) || [],
+    );
+    if (allIds.size > 0) {
+      colorMap = Object.fromEntries(
+        Array.from(allIds).map((id, index) => [
+          id,
+          colorPalette[index % colorPalette.length],
+        ]),
+      );
     }
-    console.log('Color map:', colorMap);
+    setColorMap(colorMap);
 
     console.log('Map useEffect triggered', showType, featureRef.current);
     if (!mapRef.current) return;
@@ -180,8 +190,13 @@ export const Map: FC<Props> = ({
     <div className={clsx('bg-white w-full h-full', props.className)}>
       <div id="map" className="map w-full h-full"></div>
       {/* Legend for the map */}
-      <div className="absolute bottom-4 right-4 left-4 min-h-10 bg-amber-100">
-        <Legend items={[]} />
+      <div className="absolute bottom-4 right-4 left-4 min-h-10">
+        <Legend
+          items={Object.entries(colorMap).map((item) => ({
+            name: item[0],
+            color: item[1],
+          }))}
+        />
       </div>
     </div>
   );

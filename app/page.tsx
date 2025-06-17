@@ -66,10 +66,10 @@ export default async function Home({
         </div>
 
         {/* Right Column: Table and Filter */}
-        <div className="flex flex-col gap-8 col-span-6 md:col-span-7 h-full overflow-y-auto">
+        <div className="flex flex-col gap-8 col-span-6 md:col-span-7 overflow-y-auto">
           <Filter />
           <Select />
-          <div className="overflow-x-auto">
+          <div className="overflow-auto h-[calc(100vh-280px)]">
             <Table
               tableData={data}
               tableHeader={{

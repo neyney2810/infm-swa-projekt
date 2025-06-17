@@ -32,8 +32,11 @@ export async function GET(request: Request) {
 
     let filteredData: DataUnit[] = parsedData;
 
+    console.log('Wirtschaftszweig:', wirtschaftszweig);
+    console.log('Stoffgruppe:', stoffgruppe);
+
     // If only Stoffgruppe is provided, return all based on Stoffgruppe (each single stoffgruppe + insgesamt)
-    if (!wirtschaftszweig && stoffgruppe) {
+    if ((!wirtschaftszweig || wirtschaftszweig == "Insgesamt") && stoffgruppe) {
       filteredData = parsedData.filter((row) => {
         const stoffgruppeMatch =
           row.Stoffgruppe.split(' ')[0].toLowerCase() ===
@@ -43,7 +46,7 @@ export async function GET(request: Request) {
     }
 
     // If only Wirtschaftszweig is provided, return all based on Wirtschaftszweig (each single wirtschaftszweig + insgesamt)
-    if (wirtschaftszweig && !stoffgruppe) {
+    if (wirtschaftszweig && (!stoffgruppe || stoffgruppe == "Insgesamt")) {
       filteredData = parsedData.filter((row) => {
         const wirtschaftszweigMatch =
           row.Kennzahl.toLowerCase() === wirtschaftszweig.toLowerCase();
@@ -52,7 +55,7 @@ export async function GET(request: Request) {
     }
 
     // If both Wirtschaftszweig and Stoffgruppe are provided, filter based on both
-    if (wirtschaftszweig && stoffgruppe) {
+    if (wirtschaftszweig && stoffgruppe && wirtschaftszweig !== "Insgesamt" && stoffgruppe !== "Insgesamt") {
       filteredData = parsedData.filter((row) => {
         const wirtschaftszweigMatch =
           row.Kennzahl.toLowerCase() === wirtschaftszweig.toLowerCase();
