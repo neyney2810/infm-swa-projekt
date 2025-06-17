@@ -51,3 +51,9 @@ export type FilterT = {
   wirtschaftszweig: string | null;
   stoffgruppe: string | null;
 }
+
+export type MetaDataT = {
+  bundesland: { id: Bundesland; lat: number; lon: number }[];
+  wirtschaftszweig: string[];
+  stoffgruppe: string[];
+}

@@ -54,9 +54,9 @@ export default async function Home({
   }
   return (
     <TableProvider>
-      <div className="grid grid-cols-12 gap-8 min-h-screen sm:p-8">
+      <div className="grid grid-cols-12 gap-8 sm:p-8 grow">
         {/* Left Column: Map */}
-        <div className="flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4">
+        <div className="box-border flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4">
           <DataProvider
             pollutionData={data}
             wirtschaftszweig={wirtschaftszweig}
@@ -66,7 +66,7 @@ export default async function Home({
         </div>
 
         {/* Right Column: Table and Filter */}
-        <div className="flex flex-col gap-8 col-span-6 md:col-span-7">
+        <div className="flex flex-col gap-8 col-span-6 md:col-span-7 h-full overflow-y-auto">
           <Filter />
           <Select />
           <div className="overflow-x-auto">
