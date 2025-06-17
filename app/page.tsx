@@ -1,21 +1,18 @@
 import { TableProvider } from './components/table/Context';
 import Table from './components/table/Table';
 import CustomMapSection from './components/map/Map';
-import Paging from './components/table/Paging';
 import { DataProvider } from './components/map/DataProvider';
 import Filter from './components/Filter';
+import Select from './components/Select';
 
 export default async function Home({
   searchParams,
 }: {
   searchParams: { [key: string]: string };
 }) {
-  const { bundesland, wirtschaftszweig, stoffgruppe } = await searchParams;
+  const { wirtschaftszweig, stoffgruppe, show } = await searchParams;
   // Get data from the API
   const queryParams = new URLSearchParams();
-  if (bundesland) {
-    queryParams.append('bundesland', bundesland);
-  }
   if (wirtschaftszweig) {
     queryParams.append('wirtschaftszweig', wirtschaftszweig);
   }
@@ -40,14 +37,17 @@ export default async function Home({
     }
     const json = await response.json();
     data = json.map((item: any) => ({
-      ...item,
-      Jahr: parseInt(item.Jahr, 10),
-      Verwendung: parseFloat(item.Verwendung),
-      VerwendungCO2: parseFloat(item.VerwendungCO2),
-      Einfuhr: parseFloat(item.Einfuhr),
-      EinfuhrCO2: parseFloat(item.EinfuhrCO2),
-      Ausfuhr: parseFloat(item.Ausfuhr),
-      AusfuhrCO2: parseFloat(item.AusfuhrCO2),
+      Jahr: parseInt(item['Jahr'], 10),
+      Bundesland: item['Bundesland'],
+      Kennzahl: item['Kennzahl'],
+      Wirtschaftszweig: item['Wirtschaftszweig'],
+      Stoffgruppe: item['Stoffgruppe'],
+      Verwendung: parseFloat(item['Verwendung(t)']),
+      VerwendungCO2: parseFloat(item['VerwendungCO2(1000t)']),
+      Einfuhr: parseFloat(item['Einfuhr(t)']),
+      EinfuhrCO2: parseFloat(item['EinfuhrCO2(1000t)']),
+      Ausfuhr: parseFloat(item['Ausfuhr(t)']),
+      AusfuhrCO2: parseFloat(item['AusfuhrCO2(1000t)']),
     }));
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -57,16 +57,36 @@ export default async function Home({
       <div className="grid grid-cols-12 gap-8 min-h-screen sm:p-8">
         {/* Left Column: Map */}
         <div className="flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4">
-          <DataProvider pollutionData={data} />
+          <DataProvider
+            pollutionData={data}
+            wirtschaftszweig={wirtschaftszweig}
+            stoffgruppe={stoffgruppe}
+            show={show}
+          />
         </div>
 
         {/* Right Column: Table and Filter */}
         <div className="flex flex-col gap-8 col-span-6 md:col-span-7">
           <Filter />
+          <Select />
           <div className="overflow-x-auto">
-            <Table tableData={data} />
+            <Table
+              tableData={data}
+              tableHeader={{
+                Jahr: 'Jahr',
+                Bundesland: 'Bundesland',
+                Kennzahl: 'Kennzahl',
+                Wirtschaftszweig: 'Wirtschaftszweig',
+                Stoffgruppe: 'Stoffgruppe',
+                Verwendung: 'Verwendung(t)',
+                VerwendungCO2: 'VerwendungCO2(1000t)',
+                Einfuhr: 'Einfuhr(t)',
+                EinfuhrCO2: 'EinfuhrCO2(1000t)',
+                Ausfuhr: 'Ausfuhr(t)',
+                AusfuhrCO2: 'AusfuhrCO2(1000t)',
+              }}
+            />
           </div>
-          <Paging />
         </div>
       </div>
     </TableProvider>

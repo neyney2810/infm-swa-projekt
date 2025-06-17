@@ -99,7 +99,7 @@ class MarkerCreator {
     if (!this.ctx) return;
 
     const holeRadius = this.radius * hole;
-    this.ctx.fillStyle = 'white';
+    this.ctx.fillStyle = 'lightcoral'; // Light red color
     this.ctx.beginPath();
     this.ctx.arc(this.radius, this.radius, holeRadius, 0, 2 * Math.PI);
     this.ctx.closePath();

@@ -5,22 +5,23 @@ import { DataUnit } from '@/app/types';
 
 type TableProps = {
   tableData: DataUnit[];
+  tableHeader?: Record<keyof DataUnit, string>;
 };
 
-const Table: React.FC<TableProps> = ({ tableData }) => {
-  const headers = tableData.length > 0 ? Object.keys(tableData[0]) : [];
-
+const Table: React.FC<TableProps> = ({ tableData, tableHeader }) => {
+  const headers = tableHeader ? Object.keys(tableData) : [];
+  const keyHeaders = Object.keys(tableHeader || {}) as (keyof DataUnit)[];
   return (
     <div className="">
       <table className="min-w-full border-collapse border border-gray-300">
         <thead>
           <tr>
-            {headers.map((header) => (
+            {keyHeaders.map((header) => (
               <th
                 key={header}
                 className="border border-gray-300 px-4 py-2 text-left bg-gray-100"
               >
-                {header}
+                {tableHeader ? tableHeader[header] : ''}
               </th>
             ))}
           </tr>
@@ -28,9 +29,9 @@ const Table: React.FC<TableProps> = ({ tableData }) => {
         <tbody>
           {tableData.map((row, rowIndex) => (
             <tr key={rowIndex} className="hover:bg-gray-50">
-              {headers.map((header) => (
+              {keyHeaders.map((header) => (
                 <td key={header} className="border border-gray-300 px-4 py-2">
-                  {(row as Record<string, any>)[header]}
+                  {String((row as Record<string, any>)[header])}
                 </td>
               ))}
             </tr>
