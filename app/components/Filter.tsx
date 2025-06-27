@@ -22,14 +22,38 @@ const Filter: React.FC = () => {
     { id: string; name: string }[]
   >([]);
 
+  const [change, setPreviousChange] = useState<
+    'wirtschaftszweig' | 'stoffgruppe' | null
+  >(null);
+
   useEffect(() => {
     const fetchMetaData = async () => {
       try {
-        const response = await fetch('/api/meta');
+        // Construct the API URL with query parameters
+        const queryParams = new URLSearchParams();
+        if (
+          stoffgruppe &&
+          change == 'stoffgruppe' &&
+          stoffgruppe !== 'Insgesamt'
+        ) {
+          queryParams.set('stoffgruppe', stoffgruppe);
+        }
+        if (
+          wirtschaftszweig &&
+          change == 'wirtschaftszweig' &&
+          wirtschaftszweig !== 'Insgesamt'
+        ) {
+          queryParams.set('wirtschaftszweig', wirtschaftszweig);
+        }
+
+        console.log('query Params', queryParams.toString());
+
+        const response = await fetch(`/api/meta?${queryParams.toString()}`);
         if (!response.ok) {
           throw new Error('Failed to fetch Wirtschaftszweig options');
         }
         const data = await response.json();
+        console.log('Fetched Wirtschaftszweig options:', data);
         setWirtschaftszweigOptions(data.wirtschaftszweig || []);
         setStoffgruppeOptions(data.stoffgruppe || []);
       } catch (error) {
@@ -38,11 +62,12 @@ const Filter: React.FC = () => {
     };
 
     fetchMetaData();
-  }, []);
+  }, [stoffgruppe, wirtschaftszweig]);
 
   const handleStoffgruppeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
     setStoffgruppe(selectedValue);
+    setPreviousChange('stoffgruppe');
 
     // Update the URL with the selected stoffgruppe
     const params = new URLSearchParams(window.location.search);
@@ -59,6 +84,7 @@ const Filter: React.FC = () => {
   ) => {
     const selectedValue = e.target.value;
     setWirtschaftszweig(selectedValue);
+    setPreviousChange('wirtschaftszweig');
     // Update the URL with the selected wirtschaftszweig
     const params = new URLSearchParams(window.location.search);
     if (selectedValue) {

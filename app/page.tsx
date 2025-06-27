@@ -36,18 +36,21 @@ export default async function Home({
       throw new Error('Failed to fetch data');
     }
     const json = await response.json();
+    const parsedFloat = (value: string) => {
+      return value ? parseFloat(value.replace(',', '.')) : 0;
+    };
     data = json.map((item: any) => ({
       Jahr: parseInt(item['Jahr'], 10),
       Bundesland: item['Bundesland'],
       Kennzahl: item['Kennzahl'],
       Wirtschaftszweig: item['Wirtschaftszweig'],
       Stoffgruppe: item['Stoffgruppe'],
-      Verwendung: parseFloat(item['Verwendung(t)']),
-      VerwendungCO2: parseFloat(item['VerwendungCO2(1000t)']),
-      Einfuhr: parseFloat(item['Einfuhr(t)']),
-      EinfuhrCO2: parseFloat(item['EinfuhrCO2(1000t)']),
-      Ausfuhr: parseFloat(item['Ausfuhr(t)']),
-      AusfuhrCO2: parseFloat(item['AusfuhrCO2(1000t)']),
+      Verwendung: parsedFloat(item['Verwendung(t)']),
+      VerwendungCO2: parsedFloat(item['VerwendungCO2(1000t)']),
+      Einfuhr: parsedFloat(item['Einfuhr(t)']),
+      EinfuhrCO2: parsedFloat(item['EinfuhrCO2(1000t)']),
+      Ausfuhr: parsedFloat(item['Ausfuhr(t)']),
+      AusfuhrCO2: parsedFloat(item['AusfuhrCO2(1000t)']),
     }));
   } catch (error) {
     console.error('Error fetching data:', error);

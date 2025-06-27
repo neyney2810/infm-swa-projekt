@@ -45,6 +45,14 @@ const colorPalette = [
   '#8bc34a',
   '#9c27b0',
   '#ff9800',
+  '#2196f3',
+  '#4caf50',
+  '#e91e63',
+  '#ff5722',
+  '#673ab7',
+  '#3f51b5',
+  '#009688',
+  '#cddc39',
 ];
 
 export const Map: FC<Props> = ({
@@ -168,7 +176,7 @@ export const Map: FC<Props> = ({
             }),
           }),
           text: new Text({
-            text: markerdata.innerValue.toString(),
+            text: markerdata.innerValue.toString().split('.')[0],
             fill: new Fill({ color: '#000' }),
           }),
         });
@@ -190,7 +198,7 @@ export const Map: FC<Props> = ({
     <div className={clsx('bg-white w-full h-full', props.className)}>
       <div id="map" className="map w-full h-full"></div>
       {/* Legend for the map */}
-      <div className="absolute bottom-4 right-4 left-4 min-h-10">
+      <div className="absolute bottom-0 right-0 left-0 min-h-10">
         <Legend
           items={Object.entries(colorMap).map((item) => ({
             name: item[0],

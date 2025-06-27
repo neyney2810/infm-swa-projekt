@@ -57,6 +57,12 @@ export async function DataProvider({
 }: DataProviderProps) {
   const metaData = await fetchMetaData();
 
+  const processedPollutionData = pollutionData.map((item) => ({
+    ...item,
+    // Ensure Verwendung is a number, fallback to 0 if not available
+    Value: show == 'co2' ? item.VerwendungCO2 || 0 : item.Verwendung || 0,
+  }));
+
   if (!metaData) {
     return <div>Error loading meta data</div>;
   }
@@ -64,7 +70,7 @@ export async function DataProvider({
   const formatMarkerData = (
     wirtschaftszweig: string | undefined,
     stoffgruppe: string | undefined,
-    pollutionData: DataUnit[],
+    pollutionData: (DataUnit & { Value: number })[],
   ) => {
     let markerData: MarkerData[] = [];
     // Wirtschaftszweig nicht gewählt, stoffgruppe ausgewählt -> Tortendiagramm mit Wirtschaftszweig auf Außenseite, größe wirtschaftszweig insgesamt
@@ -84,7 +90,7 @@ export async function DataProvider({
               item.Wirtschaftszweig !== 'Insgesamt',
           );
           return {
-            values: fetchedValue.map((item) => item.Verwendung),
+            values: fetchedValue.map((item) => item.Value),
             radius: 20,
             stroke: 1,
             lat: data.lat,
@@ -98,7 +104,7 @@ export async function DataProvider({
                     stoffgruppe.toLowerCase() &&
                   item.Wirtschaftszweig === 'Insgesamt'
                 );
-              })?.Verwendung || DEFAULT_INNER_VALUE, // Fallback for inner value
+              })?.Value || 0, // Fallback for inner value
           };
         },
       );
@@ -121,7 +127,7 @@ export async function DataProvider({
           );
 
           return {
-            values: pData.map((item) => item.Verwendung),
+            values: pData.map((item) => item.Value),
             radius: 30,
             stroke: 1,
             lat: data.lat,
@@ -133,7 +139,7 @@ export async function DataProvider({
                   item.Kennzahl === wirtschaftszweig &&
                   item.Stoffgruppe === 'Insgesamt'
                 );
-              })?.Verwendung || -1, // Placeholder for inner value
+              })?.Value || 0, // Placeholder for inner value
             ids: pData.map((item) => item.Stoffgruppe),
           };
         },
@@ -141,7 +147,12 @@ export async function DataProvider({
       return markerData;
     }
     // Wirtschaftszweig gewählt, stoffgruppe gewählt -> punkt in größe
-    if (wirtschaftszweig && stoffgruppe) {
+    if (
+      wirtschaftszweig &&
+      wirtschaftszweig !== 'insgesamt' &&
+      stoffgruppe &&
+      stoffgruppe !== 'insgesamt'
+    ) {
       // Convert pollutionData to MarkerData format
       markerData = pollutionData
         .filter(
@@ -162,7 +173,7 @@ export async function DataProvider({
             metaData.bundesland.find(
               (data: { id: Bundesland }) => data.id === item.Bundesland,
             )?.lon || 0,
-          innerValue: item.Verwendung, // Use the value directly
+          innerValue: item.Value || 0, // Use the value directly
         }));
       return markerData;
     }
@@ -180,14 +191,19 @@ export async function DataProvider({
         metaData.bundesland.find(
           (data: { id: Bundesland }) => data.id === item.Bundesland,
         )?.lon || 0,
-      innerValue: item.Verwendung, // Use the value directly
+      innerValue: item.Value, // Use the value directly
     }));
+    return markerData;
   };
 
   return (
     <>
       <Map
-        markers={formatMarkerData(wirtschaftszweig, stoffgruppe, pollutionData)}
+        markers={formatMarkerData(
+          wirtschaftszweig,
+          stoffgruppe,
+          processedPollutionData,
+        )}
         showType={getShowType(wirtschaftszweig, stoffgruppe)}
       />
     </>

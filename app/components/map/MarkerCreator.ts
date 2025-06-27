@@ -26,7 +26,7 @@ class MarkerCreator {
       values,
       colors,
       radius,
-      hole = 0.6,
+      hole = 0.7,
       stroke = 0,
     } = options;
 
