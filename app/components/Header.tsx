@@ -6,10 +6,7 @@ const Header: React.FC = () => {
       <div style={styles.logo}>SWA Dashboard</div>
       <nav style={styles.nav}>
         {/* Notification Icon */}
-        <div style={styles.notification}>
-          <span style={styles.notificationIcon}>🔔</span>
-          <span style={styles.notificationBadge}>3</span>
-        </div>
+        <div></div>
 
         {/* Avatar */}
         <div style={styles.avatar}>

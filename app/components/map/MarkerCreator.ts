@@ -1,7 +1,7 @@
 'use client';
 
 interface MarkerProps {
-  innerValue: number;
+  total: number;
   values: number[];
   colors: string[];
   radius: number;
@@ -22,7 +22,7 @@ class MarkerCreator {
 
   createPiechart(options: MarkerProps): HTMLCanvasElement {
     const {
-      innerValue,
+      total,
       values,
       colors,
       radius,
@@ -41,7 +41,7 @@ class MarkerCreator {
 
     // Draw outer pie chart
     
-    this.drawPieChart(values, colors, stroke);
+    this.drawPieChart(values, colors, stroke, total);
 
     // Draw inner hole
     if (hole > 0) {
@@ -54,11 +54,11 @@ class MarkerCreator {
   private drawPieChart(
     values: number[],
     colors: string[],
-    stroke: number
+    stroke: number,
+    total: number
   ): void {
     if (!this.ctx) return;
 
-    const total = values.reduce((acc, curr) => acc + curr, 0);
     let startAngle = 0;
 
     values.forEach((value, index) => {
@@ -75,6 +75,16 @@ class MarkerCreator {
 
       startAngle += sliceAngle;
     });
+
+    if (startAngle < 2 * Math.PI) {
+      // Draw the remaining slice to complete the circle
+      this.drawSlice(
+        this.radius,
+        startAngle,
+        2 * Math.PI,
+        "lightgray" // Default color for the remaining slice
+      );
+    }
   }
 
   private drawSlice(

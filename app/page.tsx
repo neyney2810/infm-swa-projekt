@@ -57,9 +57,9 @@ export default async function Home({
   }
   return (
     <TableProvider>
-      <div className="grid grid-cols-12 gap-8 sm:p-8 grow">
+      <div className="grid grid-cols-6 lg:grid-cols-12 gap-8 sm:p-8 grow">
         {/* Left Column: Map */}
-        <div className="box-border flex flex-col col-span-6 md:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4 relative">
+        <div className="box-border h-[500px] lg:h-auto flex flex-col col-span-6 lg:col-span-5 items-center justify-center border border-gray-300 rounded-md p-4 relative">
           <DataProvider
             pollutionData={data}
             wirtschaftszweig={wirtschaftszweig}

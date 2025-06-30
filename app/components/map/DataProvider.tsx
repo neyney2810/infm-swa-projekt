@@ -95,8 +95,9 @@ export async function DataProvider({
             stroke: 1,
             lat: data.lat,
             lon: data.lon,
+            bundesland: data.id,
             ids: fetchedValue.map((item) => item.Wirtschaftszweig),
-            innerValue:
+            total:
               pollutionData.find((item) => {
                 return (
                   item.Bundesland === data.id &&
@@ -132,7 +133,8 @@ export async function DataProvider({
             stroke: 1,
             lat: data.lat,
             lon: data.lon,
-            innerValue:
+            bundesland: data.id,
+            total:
               pollutionData.find((item) => {
                 return (
                   item.Bundesland === data.id &&
@@ -173,7 +175,8 @@ export async function DataProvider({
             metaData.bundesland.find(
               (data: { id: Bundesland }) => data.id === item.Bundesland,
             )?.lon || 0,
-          innerValue: item.Value || 0, // Use the value directly
+          bundesland: item.Bundesland,
+          total: item.Value || 0, // Use the value directly
         }));
       return markerData;
     }
@@ -191,7 +194,8 @@ export async function DataProvider({
         metaData.bundesland.find(
           (data: { id: Bundesland }) => data.id === item.Bundesland,
         )?.lon || 0,
-      innerValue: item.Value, // Use the value directly
+      bundesland: item.Bundesland,
+      total: item.Value, // Use the value directly
     }));
     return markerData;
   };

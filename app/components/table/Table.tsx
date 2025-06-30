@@ -32,7 +32,7 @@ const Table: React.FC<TableProps> = ({ tableData, tableHeader }) => {
               className={`hover:bg-gray-50 ${
                 row.Stoffgruppe === 'Insgesamt' ||
                 row.Wirtschaftszweig === 'Insgesamt'
-                  ? 'bg-yellow-100' // Highlight row with a yellow background
+                  ? 'bg-yellow-100'
                   : ''
               }`}
             >
