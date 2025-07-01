@@ -2,100 +2,100 @@
     "type": "FeatureCollection",
     "features": [
         {
-            "name": "Stuttgart",
-            "bundesland": "Baden-Württemberg",
-            "lat": 48.7758,
-            "lon": 9.1829
-        },
-        {
-            "name": "München",
-            "bundesland": "Bayern",
-            "lat": 48.1371,
-            "lon": 11.5754
-        },
-        {
-            "name": "Berlin",
-            "bundesland": "Berlin",
-            "lat": 52.5200,
-            "lon": 13.4050
-        },
-        {
-            "name": "Potsdam",
-            "bundesland": "Brandenburg",
-            "lat": 52.4000,
-            "lon": 13.0667
-        },
-        {
-            "name": "Bremen",
-            "bundesland": "Bremen",
-            "lat": 53.0758,
-            "lon": 8.8078
-        },
-        {
-            "name": "Hamburg",
-            "bundesland": "Hamburg",
-            "lat": 53.5511,
-            "lon": 9.9937
+            "name": "Düsseldorf",
+            "bundesland": "Nordrhein-Westfalen",
+            "lat": 51.25,
+            "lon": 6.80
         },
         {
             "name": "Wiesbaden",
             "bundesland": "Hessen",
-            "lat": 50.0826,
-            "lon": 8.2415
-        },
-        {
-            "name": "Schwerin",
-            "bundesland": "Mecklenburg-Vorpommern",
-            "lat": 53.6355,
-            "lon": 11.4019
-        },
-        {
-            "name": "Hannover",
-            "bundesland": "Niedersachsen",
-            "lat": 52.3794,
-            "lon": 9.7437
-        },
-        {
-            "name": "Düsseldorf",
-            "bundesland": "Nordrhein-Westfalen",
-            "lat": 51.2277,
-            "lon": 6.7735
+            "lat": 50.5807611,
+            "lon": 9.0272493
         },
         {
             "name": "Mainz",
             "bundesland": "Rheinland-Pfalz",
-            "lat": 50.0000,
-            "lon": 8.2711
+            "lat": 49.854075,
+            "lon": 7.443921
         },
         {
             "name": "Saarbrücken",
             "bundesland": "Saarland",
-            "lat": 49.2333,
-            "lon": 7.0000
+            "lat": 49.30,
+            "lon": 7.05
         },
         {
-            "name": "Dresden",
-            "bundesland": "Sachsen",
-            "lat": 51.0504,
-            "lon": 13.7373
+            "name": "Stuttgart",
+            "bundesland": "Baden-Württemberg",
+            "lat": 48.75,
+            "lon": 9.20
         },
         {
-            "name": "Magdeburg",
-            "bundesland": "Sachsen-Anhalt",
-            "lat": 52.1205,
-            "lon": 11.6276
-        },
-        {
-            "name": "Kiel",
-            "bundesland": "Schleswig-Holstein",
-            "lat": 54.3233,
-            "lon": 10.1394
+            "name": "München",
+            "bundesland": "Bayern",
+            "lat": 48.15,
+            "lon": 11.60
         },
         {
             "name": "Erfurt",
             "bundesland": "Thüringen",
-            "lat": 50.9787,
-            "lon": 11.0328
+            "lat": 51.00,
+            "lon": 11.05
+        },
+        {
+            "name": "Dresden",
+            "bundesland": "Sachsen",
+            "lat": 51.05,
+            "lon": 13.75
+        },
+        {
+            "name": "Magdeburg",
+            "bundesland": "Sachsen-Anhalt",
+            "lat": 52.10,
+            "lon": 11.60
+        },
+        {
+            "name": "Potsdam",
+            "bundesland": "Brandenburg",
+            "lat": 52.053528,
+            "lon": 13.834833
+        },
+        {
+            "name": "Schwerin",
+            "bundesland": "Mecklenburg-Vorpommern",
+            "lat": 53.60,
+            "lon": 11.30
+        },
+        {
+            "name": "Kiel",
+            "bundesland": "Schleswig-Holstein",
+            "lat": 54.30,
+            "lon": 10.10
+        },
+        {
+            "name": "Hannover",
+            "bundesland": "Niedersachsen",
+            "lat": 52.40,
+            "lon": 9.75
+        },
+        {
+            "name": "Bremen",
+            "bundesland": "Bremen",
+            "lat": 53.05,
+            "lon": 8.75
+        },
+        {
+            "name": "Hamburg",
+            "bundesland": "Hamburg",
+            "lat": 53.55,
+            "lon": 10.05
+        },
+        {
+            "name": "Berlin",
+            "bundesland": "Berlin",
+            "lat": 52.55,
+            "lon": 13.45
         }
     ]
 }

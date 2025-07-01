@@ -2,21 +2,66 @@ import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
 import { NextResponse } from 'next/server';
+import { DataUnit } from '@/app/types';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const all = searchParams.get('all') === 'true'; // Check if all is true
+    const wirtschaftszweig = searchParams.get('wirtschaftszweig') || null;
+    const stoffgruppe = searchParams.get('stoffgruppe') || null;
 
-    // Execute all three calls in parallel
-    const [wirtschaftszweig, stoffgruppe, bundesland] = await Promise.all([
+    console.log(wirtschaftszweig, stoffgruppe, all);
+
+    // Fetch all metadata
+    const [wirtschaftszweigOptions, stoffgruppeOptions, bundeslandOptions] = await Promise.all([
       getWirtschaftszweigOptions(all),
       getStoffgruppeOptions(all),
       getBundeslandOptions(all),
     ]);
 
-    // Return the options as JSON
-    return NextResponse.json({ bundesland, wirtschaftszweig, stoffgruppe });
+    // Filter metadata based on wirtschaftszweig and stoffgruppe
+    let filteredStoffgruppeOptions = stoffgruppeOptions;
+    let filteredWirtschaftszweigOptions = wirtschaftszweigOptions;
+
+    if (wirtschaftszweig && stoffgruppe) {
+      return NextResponse.json({
+        wirtschaftszweig: wirtschaftszweigOptions,
+        stoffgruppe: stoffgruppeOptions,
+        bundesland: bundeslandOptions,
+      })
+    }
+
+    // if (wirtschaftszweig) {
+    //   // Filter stoffgruppe options based on the given wirtschaftszweig
+    //   console.log('Filtering stoffgruppe options for wirtschaftszweig:', wirtschaftszweig);
+    //   const relevantStoffgruppen = new Set(
+    //     (await getFilteredData(all, wirtschaftszweig, null)).map((row) => row.Stoffgruppe) // Extract the first word as ID
+    //   );
+    //   filteredStoffgruppeOptions = stoffgruppeOptions.filter((option) =>
+    //     relevantStoffgruppen.has(option.name)
+    //   );
+    // }
+
+    if (stoffgruppe) {
+      // Filter wirtschaftszweig options based on the given stoffgruppe
+      const relevantWirtschaftszweige = new Set(
+        (await getFilteredData(all, null, stoffgruppe)).map((row) => row.Kennzahl)
+      );
+      filteredWirtschaftszweigOptions = wirtschaftszweigOptions.filter((option) =>
+        relevantWirtschaftszweige.has(option.id)
+      );
+    }
+
+    const res = {
+      bundesland: bundeslandOptions,
+      wirtschaftszweig: filteredWirtschaftszweigOptions,
+      stoffgruppe: filteredStoffgruppeOptions,
+    }
+
+
+    // Return the filtered options as JSON
+    return NextResponse.json(res);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch options' },
@@ -160,5 +205,27 @@ async function getBundeslandOptions(all: boolean): Promise<
       console.error('Error reading file:', error);
       reject(error);
     });
+  });
+}
+
+// Helper function to get filtered data based on wirtschaftszweig and stoffgruppe
+async function getFilteredData(all: boolean, wirtschaftszweig: string | null, stoffgruppe: string | null) {
+  const filePath = path.join(
+    process.cwd(),
+    'public',
+    'utils',
+    all ? 'data.csv' : 'data_trimmed.csv'
+  );
+
+  const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+  const parsedData = Papa.parse<DataUnit>(fileContent, {
+    header: true,
+    skipEmptyLines: true,
+  }).data;
+
+  return parsedData.filter((row) => {
+    const wirtschaftszweigMatch = !wirtschaftszweig || row.Kennzahl === wirtschaftszweig;
+    const stoffgruppeMatch = !stoffgruppe || row.Stoffgruppe.split(" ")[0] === stoffgruppe;
+    return wirtschaftszweigMatch && stoffgruppeMatch;
   });
 }

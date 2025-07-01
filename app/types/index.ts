@@ -33,12 +33,13 @@ export type DataUnit = {
 
 export type MarkerData = {
   values: number[];
-  innerValue: number;
+  total: number;
   radius: number;
   stroke?: number;
   lon: number;
   lat: number;
   ids?: string[]; // IDs of the Kennzahlen for the pie chart
+  bundesland?: Bundesland; // Optional, if the marker is for a specific Bundesland
 };
 
 export type BundeslandData = {
